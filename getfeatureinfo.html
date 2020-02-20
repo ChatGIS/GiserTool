@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>点击查询WFS数据</title>
+		<!-- CDN -->
+		<link href="https://openlayers.org/en/v4.6.5/css/ol.css" rel="stylesheet" type="text/css">
+		<script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+		<script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+		<!-- 本地资源 -->
+		<!-- <link href="../js/openLayersv4.1.1/ol.css" rel="stylesheet" type="text/css"/>
+		<script src="../js/openLayersv4.1.1/ol.js" type="text/javascript" charset="UTF-8"></script>
+		<script src="../js/jquerymin.js" type="text/javascript" charset="UTF-8"></script>-->
+	</head>
+	<body>
+		<div style="width: 100;height: 30px;">
+			<span>点击查询结果：</span><input type="text" id="message"/>
+		</div>
+		<div id="map" style="width: 100%;height: 800px;"></div>
+		<script>
+			// 高德底图
+			var gaodeTileLayer = new ol.layer.Tile({
+				source: new ol.source.XYZ({
+					url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+				})
+			});
+			
+			// 地图
+			var map = new ol.Map({
+				layers:[gaodeTileLayer],
+				view: new ol.View({
+					center: [117.020847,36.670086],
+					maxZoom: 19,
+					zoom: 4,
+					projection: 'EPSG:4326'
+				}),
+				target: 'map'
+			})
+			
+			var source = new ol.source.Vector();
+			
+			// 根据GeoJSON定义图层
+			function getGeoJSON(src){
+				source.addFeatures(new ol.format.GeoJSON().readFeatures(src));
+				var layerProvince = new ol.layer.Vector({
+					source: source
+				});
+				map.addLayer(layerProvince);
+			}			
+			 
+			// ajax获取数据
+			$.ajax({
+				url: 'http://localhost:8082/geoserver/DreamiceWS/ows?'+
+					'service=WFS&version=1.0.0&request=GetFeature&typeName=DreamiceWS%3Agadm36_CHN_1&'+
+					'maxFeatures=5000&outputFormat=application%2Fjson',
+				success: function(data, status){
+					getGeoJSON(data);
+				}
+			})
+			
+			// 单击事件
+			map.on('singleclick', function(e){
+				// 通过source/vector的getFeaturesAtCoordinate(coordinate)方法
+				/* var features = source.getFeaturesAtCoordinate(e.coordinate);
+				if(features.length > 0){
+					console.log(features[0].getProperties().NAME_0);
+					console.log(features[0].getProperties().NAME_1);
+				} */
+				var pixel = map.getEventPixel(e.originalEvent);
+				// 通过map的getFeaturesAtPixel(pixel)方法
+				var features = map.getFeaturesAtPixel(pixel);
+				if(features != null && features.length > 0){
+					console.log(features[0].getProperties().NAME_0);
+					console.log(features[0].getProperties().NAME_1);
+					$("#message").val(features[0].getProperties().NAME_0 + ":" + features[0].getProperties().NAME_1);
+				}
+			})
+			
+			// select交互
+			/* var selectSingleClick = new ol.interaction.Select();
+			map.addInteraction(selectSingleClick);
+			selectSingleClick.on('select', function(e){
+				if(e.selected.length > 0){
+					console.log(e.selected[0].getProperties().NAME_0);
+					console.log(e.selected[0].getProperties().NAME_1);
+				}
+			}); */
+			
+		</script>
+	</body>
+</html>
