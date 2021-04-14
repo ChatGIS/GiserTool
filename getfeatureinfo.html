@@ -86,6 +86,16 @@
 				}
 			}); */
 			
+			/**
+			 * 获取返回数据
+			 */
+			App.prototype.getDataSourceByArcgis = function(str) {
+				var format = new ol.format.EsriJSON();
+				var fr = format.readFeatures(str, {
+					featureProjection: "EPSG:4326"
+				});
+				return fr;
+			};
 		</script>
 	</body>
 </html>
