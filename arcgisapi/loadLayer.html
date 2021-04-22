@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello World</title>
+    <link rel="stylesheet" href="https://js.arcgis.com/3.28/dijit/themes/tundra/tundra.css">
+    <link rel="stylesheet" href="https://js.arcgis.com/3.28/esri/css/esri.css">
+    <script src="https://js.arcgis.com/3.28/"></script>
+    <script>
+        require(["esri/map","esri/layers/ArcGISDynamicMapServiceLayer",
+                    "dojo/domReady!"],
+                function(Map,ArcGISDynamicMapServiceLayer){
+                    var map = new Map("mapDiv");
+                    //利用url创建一个动态地图服务对象
+                    var layer=new ArcGISDynamicMapServiceLayer("http://10.162.241.77:6080/arcgis/rest/services/SHANDONG/COMM_370000_KDWTJSL/MapServer");
+                    //将地图服务对象添加到地图容器中
+                    map.addLayer(layer);
+                })
+    </script>
+</head>
+<body class="tundra">
+<div id="mapDiv" style="width:900px; height:600px; border:1px solid #000;"></div>
+</body>
+</html>

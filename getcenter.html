@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>获取中间点</title>
+		<!-- CDN -->
+		<link href="https://openlayers.org/en/v4.6.5/css/ol.css" rel="stylesheet" type="text/css">
+		<script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+		<script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+		<!-- 本地资源 -->
+		<!-- <link href="../js/openLayersv4.1.1/ol.css" rel="stylesheet" type="text/css"/>
+		<script src="../js/openLayersv4.1.1/ol.js" type="text/javascript" charset="UTF-8"></script>
+		<script src="../js/jquerymin.js" type="text/javascript" charset="UTF-8"></script>
+		<script src="../js/clipboard.min.js" type="text/javascript" charset="UTF-8"></script> -->
+		<style type="text/css">
+			.tooltip {
+			  position: relative;
+			  background: rgba(0, 0, 0, 0.5);
+			  border-radius: 4px;
+			  color: white;
+			  padding: 4px 8px;
+			  opacity: 0.7;
+			  white-space: nowrap;
+			}
+			.tooltip-measure {
+			  opacity: 1;
+			  font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="map" style="width: 100%;height: 800px;"></div>
+	</body>
+	<script>
+		//高德地图图层
+		var gaodeTileLayer = new ol.layer.Tile({
+			source: new ol.source.XYZ({
+				url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+			})
+		});
+		
+		var source = new ol.source.Vector({wrapX: false});
+		
+		var vector = new ol.layer.Vector({
+			source: source,
+		});
+		
+		var map = new ol.Map({
+			layers:[gaodeTileLayer, vector],
+			view: new ol.View({
+				center: [117.020847,36.670086],
+				maxZoom: 19,
+				zoom: 14,
+				projection: 'EPSG:4326'
+			}),
+			target: 'map'
+		})
+		
+		/* 
+			参考官网：https://openlayers.org/en/latest/examples/draw-features.html 
+		*/
+		var draw;
+		function addInteraction() {
+		  var value = "Polygon";
+		  if (value !== 'None') {
+		    draw = new ol.interaction.Draw({
+		      source: source,
+		      type: value,
+		    });
+		    map.addInteraction(draw);
+		  }
+		};
+		
+		addInteraction();
+		
+		draw.on("drawstart",function (e) {
+			console.log("！！！！我要开始画线了！！！！");
+			e.feature.getGeometry().on('change',function(evt){
+				console.log("aa");
+				var geom = evt.target;
+				var output;
+				//if (geom instanceof ol.geom.LineString) {
+					output = formatLength(geom);
+					tooltipCoord = geom.getLastCoordinate();
+				//}
+				var measureTooltipElement = document.createElement('div');
+				measureTooltipElement.className = 'tooltip tooltip-measure';
+				measureTooltipElement.innerHTML = output;
+				var measureTooltip = new ol.Overlay({
+					element: measureTooltipElement,
+					offset: [0, -15],
+					positioning: 'bottom-center'
+				});
+				map.addOverlay(measureTooltip);
+				measureTooltip.setPosition(tooltipCoord);
+			})
+		});
+				
+		draw.on('change', function(e){
+			console.log("ch");
+		})
+		
+		var formatLength = function(line) {
+		  var length;
+		  var coordinates = line.getCoordinates();
+		  length = 0;
+		  var sourceProj = map.getView().getProjection();
+		  for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
+		    // var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
+		    // var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');
+			var c1 = coordinates[i];
+			var c2 = coordinates[i + 1];
+		    length += haversineDistance(c1, c2);
+		  }
+		  var output;
+		  if (length > 100) {
+		    output = (Math.round(length / 1000 * 100) / 100) +
+		        ' ' + "千米";
+		  } else {
+		    output = (Math.round(length * 100) / 100) +
+		        ' ' + "米";
+		  }
+		  return output;
+		};
+		
+		var haversineDistance = function(c1, c2) {
+		  var lat1 = ol.math.toRadians(c1[1]);
+		  var lat2 = ol.math.toRadians(c2[1]);
+		  var deltaLatBy2 = (lat2 - lat1) / 2;
+		  var deltaLonBy2 = ol.math.toRadians(c2[0] - c1[0]) / 2;
+		  var a = Math.sin(deltaLatBy2) * Math.sin(deltaLatBy2) +
+		      Math.sin(deltaLonBy2) * Math.sin(deltaLonBy2) *
+		      Math.cos(lat1) * Math.cos(lat2);
+		  return 2 * this.radius * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		};
+	</script>
+</html>
