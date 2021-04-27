@@ -34,9 +34,49 @@
 				})
 			});
 			
+			var testCenter = [116.82772,37.85794];
+			var geojsonObject = {
+			  'type': 'FeatureCollection',
+			  'crs': {
+			    'type': 'name',
+			    'properties': {
+			      'name': 'EPSG:4326',
+			    },
+			  },
+			  'features': [
+			    {
+			      'type': 'Feature',
+			      'geometry': {
+			        'type': 'Polygon',
+			        'coordinates': [
+			          [
+			            [116.83671266134,37.85794],[116.83653986987393,37.856185618803394],[116.83602813575483,37.85449865749231],[116.83519712463794,37.85294394504387],[116.83407877181443,37.851581228185566],[116.83271605495614,37.850462875362055],[116.83116134250768,37.84963186424516],[116.8294743811966,37.84912013012607],[116.82772,37.84894733866],[116.8259656188034,37.84912013012607],[116.82427865749231,37.84963186424516],[116.82272394504386,37.850462875362055],[116.82136122818557,37.851581228185566],[116.82024287536206,37.85294394504387],[116.81941186424517,37.85449865749231],[116.81890013012607,37.856185618803394],[116.81872733866,37.85794],[116.81890013012607,37.859694381196604],[116.81941186424517,37.86138134250769],[116.82024287536206,37.86293605495613],[116.82136122818557,37.86429877181443],[116.82272394504386,37.86541712463794],[116.82427865749231,37.86624813575484],[116.8259656188034,37.86675986987393],[116.82772,37.86693266134],[116.8294743811966,37.86675986987393],[116.83116134250768,37.86624813575484],[116.83271605495614,37.86541712463794],[116.83407877181443,37.86429877181443],[116.83519712463794,37.86293605495613],[116.83602813575483,37.86138134250769],[116.83653986987393,37.859694381196604],[116.83671266134,37.85794]
+						 ] ],
+			      },
+			    }]
+				};
+			var styleFeature = new ol.style.Style({
+				stroke: new ol.style.Stroke({
+				  color: 'blue',
+				  width: 3,
+				}),
+				fill: new ol.style.Fill({
+				  color: 'rgba(0, 0, 255, 0.1)',
+				})
+			});
+			
+			var sourceFeature = new ol.source.Vector({
+			  features: new ol.format.GeoJSON().readFeatures(geojsonObject),
+			});
+			
+			var layerFeature = new ol.layer.Vector({
+			  source: sourceFeature,
+			  style: styleFeature,
+			});
+			
 			// 地图
 			var map = new ol.Map({
-				layers:[gaodeTileLayer],
+				layers:[gaodeTileLayer, layerFeature],
 				view: new ol.View({
 					center: [117.020847,36.670086],
 					maxZoom: 19,
@@ -61,14 +101,14 @@
 			}			
 			 
 			// ajax获取数据
-			// $.ajax({
-			// 	url: 'http://localhost:8082/geoserver/DreamiceWS/ows?'+
-			// 		'service=WFS&version=1.0.0&request=GetFeature&typeName=DreamiceWS%3Agadm36_CHN_1&'+
-			// 		'maxFeatures=5000&outputFormat=application%2Fjson',
-			// 	success: function(data, status){
-			// 		getGeoJSON(data);
-			// 	}
-			// })
+			$.ajax({
+				url: 'http://119.188.255.2:18080/geoserver/	zyks/ows?'+
+					'service=WFS&version=1.0.0&request=GetFeature&typeName=	zyks%3AT_ZYKS_CITY_SD&'+
+					'maxFeatures=5000&outputFormat=application%2Fjson',
+				success: function(data, status){
+					getGeoJSON(data);
+				}
+			})
 			
 			// 单击事件
 			map.on('singleclick', function(e){
@@ -198,6 +238,7 @@
 				map.addControl(scaleLineControl);
 			}
 
+			moveToDirect(testCenter, 15)
 		</script>
 	</body>
 </html>
