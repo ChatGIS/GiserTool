@@ -4,26 +4,22 @@
 		<meta charset="utf-8">
 		<title></title>
 		<script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/labjs/2.0.3/LAB.min.js" integrity="sha512-kbAlSEb5smG4AhoWpDe6DH+II2Z0rzX0YWMFgk8gIN5gw2xcAxPHRZ0Zn1dfhmKFFN+Vk64jteqDkQQOJvo0qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-		<!-- <script src="script/modules/common.js"></script> -->
-		<script>
-			var version = "1.0.0";
-			
-		</script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/labjs/2.0.3/LAB.min.js" integrity="sha512-kbAlSEb5smG4AhoWpDe6DH+II2Z0rzX0YWMFgk8gIN5gw2xcAxPHRZ0Zn1dfhmKFFN+Vk64jteqDkQQOJvo0qg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+		<script src="script/plugins/LAB.min.js"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css"> -->
+		<script src="script/plugins/OpenLayers/6.5.0/ol.js"></script>
+		<link rel="stylesheet" href="script/plugins/OpenLayers/6.5.0/ol.css" />
 	</head>
 	<body>
 		<input id="h1_test"/>
+		<div id="map" style="width: 100%;height: 500px;"></div>
+		<input />
 	</body>
-	<!--发布模式引入-->
-	<!-- <script src="application/script/jquery/LAB.min.js"></script> -->
-	<!--<script src="application/script/init/mobile/modules/baiduMapAPI.js"></script>-->
-	<!--<script src="application/script/init/gisInit.js"></script>-->
-	<!--开发模式引入-->
+
 	<script type="text/javascript">
+		var version = "1.0.0";
 	    $LAB.script("script/gisInit-debug.js?version="+version).wait();
-		//console.log(gis_version);
-		//$("#h1_test").val(cm.country);
-		
 	</script>
 </html>
 
