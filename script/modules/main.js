@@ -43,4 +43,15 @@ $(document).ready(function () {
 	
 	var lonlat = locate.getCurrentPosition();
 	console.log(lonlat);
+	
+	// 地图滑动
+	map.on("moveend",function(e){
+	    getZoomShow();
+	}); 
+	
+	// 获取缩放级别并展示
+	function getZoomShow(){
+		var zoom = map.getView().getZoom();
+		$("#zoom_level").val(zoom);
+	}
 })
