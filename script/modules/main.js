@@ -49,6 +49,12 @@ $(document).ready(function () {
 	    getZoomShow();
 	}); 
 	
+	map.on('pointermove', function(e) {
+		var coordinate = ol.proj.transform(e.coordinate, map.getView().getProjection().getCode(), 'EPSG:4326');
+		$("#mouse_coordinate").val(coordinate[0] + "," + coordinate[1])
+		// document.getElementById('mouse_coordinate').innerHTML = '当前鼠标位置：' + formatDegree(coordinate[0], 0, 2) + '&nbsp;&nbsp;' + formatDegree(coordinate[1], 1, 2)
+	});
+		
 	// 获取缩放级别并展示
 	function getZoomShow(){
 		var zoom = map.getView().getZoom();
