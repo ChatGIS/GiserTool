@@ -1,0 +1,29 @@
+html,body {
+	height: 100% !important;
+	width: 100% !important;
+	padding: 0px !important;
+	margin: 0px !important;
+}
+/*地图容器*/		
+.map-container {
+	width: 100%;
+	/* height: -moz-calc(100% - 60px); */
+	height: -moz-calc(100%);
+	height: -webkit-calc(100%);
+	height: calc(100%);
+}
+
+.map-info {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+	height: 40px;
+	/*padding: 0px 50px 0px 20px;*/
+	text-align: center;
+	width: 50%;
+	background-color: rgba(0, 0, 0, 0.6);
+	border-radius: 4px 0 0 0px;
+	color: #fff;
+	font-size: 15px;
+	line-height: 40px;
+}
