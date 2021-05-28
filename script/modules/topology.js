@@ -4,9 +4,31 @@
  */
 var topoj = {
 	/* 
-		jsts转换器
+		jsts转换解析器
 	 */
 	OL3Parser : new jsts.io.OL3Parser(),
+	WKTReader : new jsts.io.WKTReader(),
+	
+	/* 
+		根据点坐标获取缓冲区
+		range单位：？？？
+		返回OpenLayers支持的geometry
+	 */
+	getBufferByPoint : function(lon, lat, range){
+		var point = topoj.WKTReader.read('POINT (' + lon + ' ' + lat + ')');
+		var geomBuf = point.buffer(range);
+		return topoj.OL3Parser.write(geomBuf);
+	},
+	
+	/*
+		根据geometry获取缓冲区
+		返回OpenLayers支持的geometry
+	 */
+	getBufferByGeom : function(olGeom, range){
+		var jstsGeom = topoj.OL3Parser.read(olGeom);
+		var geomBuf = jstsGeom.buffer(range);
+		return topoj.OL3Parser.write(geomBuf);
+	},
 	
 	/* 
 		 用于判断两个OpenLayers几何对象是否相交
