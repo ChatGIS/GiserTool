@@ -45,5 +45,21 @@ var style = {
 			 	this.flag = 1;
 			 }
 		},400);
-	}
+	},
+	
+	stylePolygonGreen : new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: "green",
+			width: 1
+		})
+		
+	}),
+	
+	stylePolygonRed : new ol.style.Style({
+		stroke: new ol.style.Stroke({
+			color: "red",
+			width: 1
+		})
+		
+	}),
 }
