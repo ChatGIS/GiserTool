@@ -9,7 +9,8 @@
 		<!-- <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/css/ol.css"> -->
 		<script src="script/plugins/OpenLayers/6.5.0/ol.js"></script>
-		<link rel="stylesheet" href="script/plugins/OpenLayers/6.5.0/ol.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+		<link rel="stylesheet" href="script/plugins/OpenLayers/6.5.0/ol.css"/>
 		<script>
 			var version = "1.0.0";
 			/* 批量引入css文件 */
@@ -26,9 +27,39 @@
 	</head>
 	<body>
 		<div id="map" class="map-container"></div>
-		<div id = "map-info" class="map-info">
-			<span>缩放级别：</span><input type="text" id="zoom_level"/>
-			<span>鼠标位置：</span><input type="text" id="mouse_coordinate"/>
+		<div class="map-toolbox">
+			<span id="tool-mesure-line">测距</span>
+			<span id="tool-mesure-polygon">测面</span>
+			<span id="map-tool-location" onclick="showDiv()">定位</span>
+			<span onclick="showDiv(2)">拾取</span>
+		</div>
+		<div id="map-info " class="map-info">
+			<span>缩放级别：</span><label id="zoom-level">5</label>
+			<span>鼠标位置：</span><label id="mouse-coordinate">未获取到鼠标位置</label>
+		</div>
+		<div class="map-location boxpanel" style="display: block;">
+			<div class="panel_header">坐标定位</div>
+			<div class="panel_body">
+				<div>
+					<input type="text" id="location-coordinate"/>
+				</div>
+				<div>
+					<input type="button" value="定位"/>
+					<input type="button" value="清空"/>
+				</div>
+			</div>
+		</div>
+		<div class="map-getcoor boxpanel" style="display: block;">
+			<div class="panel_header">坐标拾取</div>
+			<div class="panel_body">
+				<div>
+					<input type="text" id="coordinate"/>
+				</div>
+				<div>
+					<button id="clone" data-clipboard-action="copy" data-clipboard-target="#coordinate">复制</button>
+					<button id="cut" data-clipboard-action="cut" data-clipboard-target="#coordinate">剪切</button>
+				</div>
+			</div>
 		</div>
 	</body>
 
