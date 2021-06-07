@@ -10,8 +10,9 @@ var coorf = {
 	    if (type == 1) {
 	        var coordinates = line.getCoordinates();
 	        length = 0;
-	        //var sourceProj = map.getView().getProjection();
-			var sourceProj = 'EPSG:4326';
+			// getProjection获取方式变化
+	        // var sourceProj = map.getView().getProjection();
+			var sourceProj = map.getView().getProjection().getCode();
 	        for (var i = 0, ii = coordinates.length - 1; i < ii; ++i) {
 	            var c1 = ol.proj.transform(coordinates[i], sourceProj, 'EPSG:4326');
 	            var c2 = ol.proj.transform(coordinates[i + 1], sourceProj, 'EPSG:4326');

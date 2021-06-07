@@ -29,30 +29,15 @@ $(document).ready(function () {
 	  source: new ol.source.Vector(),
 	});
 	
-	var measureLayer = new ol.layer.Vector({
-	    source: new ol.source.Vector(),
-	    style: new ol.style.Style({
-	        fill: new ol.style.Fill({
-	            color: 'rgba(255, 255, 255, 0.2)'
-	        }),
-	        stroke: new ol.style.Stroke({
-	            color: '#ffcc33',
-	            width: 2
-	        }),
-	        image: new ol.style.Circle({
-	            radius: 7,
-	            fill: new ol.style.Fill({
-	                color: '#ffcc33'
-	            })
-	        })
-	    })
+	layermMeasure = new ol.layer.Vector({
+	    source: new ol.source.Vector()
 	});
 	
 	var layers = [gaodeTileLayer, 
-		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, measureLayer];
+		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, layermMeasure];
 	
 	/* 地图初始化 */
-	var map = new ol.Map({
+	map = new ol.Map({
 		layers:layers,
 		view: new ol.View({
 			center: coorCenter,
@@ -60,9 +45,10 @@ $(document).ready(function () {
 			zoom: 10,
 			projection: 'EPSG:4326'
 		}),
-		target: 'map'
+		target: 'map-div'
 	})
-	
+	var sourceProj =map.getView().getProjection();
+	console.log(sourceProj);
 	var scaleLineControl = new ol.control.ScaleLine({
 		Units: 'metric',//单位有5种：degrees imperial us nautical metric
 	});
@@ -238,92 +224,15 @@ $(document).ready(function () {
 		feature5.setStyle(style.stylePolygonRed);
 		layerVector5.getSource().addFeature(feature5);
 		
-		function clearAllMapInteraction() {
-		    /* var obj1 = document.getElementById('map-marking-info');
-		    removeClass(obj1, "show"); */
-		    var interactions = map.getInteractions();
-		    var length = interactions.getLength();
-		    for (var i = 9; i < length; i++) {
-		        var interaction = interactions.item(9);
-		        if (interaction instanceof ol.interaction.Select) {
-		            interaction.getFeatures().clear()
-		        }
-		        map.removeInteraction(interaction)
-		    }
-		};
 		
-		function addMeasureInteraction(type) {
-		    //document.getElementById('map-marking-panel-title').innerHTML = type == 'area' ? '面积测量' : '长度测量';
-		    //openPanelContent(['map-marking-panel', 'measure-info']);
-		    clearAllMapInteraction();
-		    var type = (type == 'area' ? 'Polygon' : 'LineString');
-		    draw = new ol.interaction.Draw({
-		        source: measureLayer.getSource(),
-		        type: (type),
-		        style: new ol.style.Style({
-		            fill: new ol.style.Fill({
-		                color: 'rgba(255, 255, 255, 0.2)'
-		            }),
-		            stroke: new ol.style.Stroke({
-		                color: 'rgba(0, 0, 0, 0.5)',
-		                lineDash: [10, 10],
-		                width: 2
-		            }),
-		            image: new ol.style.Circle({
-		                radius: 5,
-		                stroke: new ol.style.Stroke({
-		                    color: 'rgba(0, 0, 0, 0.7)'
-		                }),
-		                fill: new ol.style.Fill({
-		                    color: 'rgba(255, 255, 255, 0.2)'
-		                })
-		            })
-		        })
-		    });
-		    map.addInteraction(draw);
-		    // createMeasureTooltip();
-		    // createHelpTooltip();
-		    var listener;
-		    draw.on('drawstart', function(evt) {
-		        sketch = evt.feature;
-		        var tooltipCoord = evt.coordinate;
-		        // var measure_geo = document.getElementById('measure-geo').checked;
-		        listener = sketch.getGeometry().on('change', function(evt) {
-		            var geom = evt.target;
-		            var output;
-		            if (geom instanceof ol.geom.Polygon) {
-		                // output = formatArea(geom, measure_geo ? 1 : 2);
-						output = coorf.formatArea(geom, 1);
-		                tooltipCoord = geom.getInteriorPoint().getCoordinates()
-		            } else if (geom instanceof ol.geom.LineString) {
-		                //output = coorf.formatLength(geom, measure_geo ? 1 : 2);
-						output = coorf.formatLength(geom, 1);
-		                tooltipCoord = geom.getLastCoordinate()
-		            }
-		            // measureTooltipElement.innerHTML = output;
-		            // measureTooltip.setPosition(tooltipCoord)
-					console.log(output);
-					$("#location-coordinate").val(output);
-					
-		        })
-		    }, this);
-		    draw.on('drawend', function() {
-		        measureTooltipElement.className = 'tooltip tooltip-static';
-		        measureTooltip.setOffset([0, -7]);
-		        sketch = null;
-		        measureTooltipElement = null;
-		        createMeasureTooltip();
-		        ol.Observable.unByKey(listener)
-		    }, this)
-		};
 		
 		/* $("#tool-mesure-line").click(addMeasureInteraction("line"));
 		$("#tool-mesure-polygon").click(addMeasureInteraction("area")); */
 		$("#tool-mesure-line").click(function(){
-			addMeasureInteraction("line");
+			control.addMeasureInteraction("line");
 		});
 		$("#tool-mesure-polygon").click(function(){
-			addMeasureInteraction("area");
+			control.addMeasureInteraction("area");
 		});
 	}
 })
