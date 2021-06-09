@@ -10,5 +10,6 @@ $LAB.script("script/plugins/JSTS/2.6.1/jsts.js?version="+jsts_version)
 .script("script/modules/common.js?version="+gis_version)
 .script("script/modules/style.js?version="+gis_version)
 .script("script/modules/locate.js?version="+gis_version)
-.script("script/modules/coorformat.js?version="+gis_version).wait()
+.script("script/modules/coorformat.js?version="+gis_version)
+.script("script/modules/control.js?version="+gis_version).wait()
 .script("script/modules/main.js?version="+gis_version);

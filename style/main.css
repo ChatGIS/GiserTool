@@ -4,6 +4,7 @@ html,body {
 	padding: 0px !important;
 	margin: 0px !important;
 }
+
 /*地图容器*/		
 .map-container {
 	width: 100%;
@@ -20,10 +21,65 @@ html,body {
 	height: 40px;
 	/*padding: 0px 50px 0px 20px;*/
 	text-align: center;
-	width: 50%;
+	width: 25%;
 	background-color: rgba(0, 0, 0, 0.6);
 	border-radius: 4px 0 0 0px;
 	color: #fff;
 	font-size: 15px;
 	line-height: 40px;
+}
+.map-info label {
+    margin-right: 20px;
+}
+
+/* 地图工具栏 */
+.map-toolbox {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	height: 40px;
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 1);
+	border-radius:3px;
+}
+
+/* 地图定位弹框 */
+.map-location {
+	position: absolute;
+	top: 50px;
+	right: 10px;
+	height: 110px;
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius:3px;
+}
+
+/* 地图坐标拾取弹框 */
+.map-getcoor {
+	position: absolute;
+	top: 250px;
+	right: 10px;
+	height: 110px;
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius:3px;
+}
+
+/* 弹框样式 */
+.boxpanel {
+	padding: 12px;
+}
+
+.boxpanel .panel_header {
+    height: 30px;
+	text-align: center;
+	font-size: 23px;
+	background-color: #bcd3f1;
+}
+
+.boxpanel .panel_body div {
+	padding-top: 10px;
 }
