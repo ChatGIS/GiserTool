@@ -1,9 +1,16 @@
+var continueLineMsg = '单击继续，双击结束';
 var control = {
 	/**
-	 * The measure tooltip element.
+	 * 当前正在绘制的要素
+	 * @type {import("../src/ol/Feature.js").default}
+	 */
+	sketch : null,
+	/**
+	 * 测量值提示框
 	 * @type {HTMLElement}
 	 */
 	measureTooltipElement : null,
+
 	/**
 	 * Overlay to show the measurement.
 	 * @type {Overlay}
@@ -11,20 +18,83 @@ var control = {
 	measureTooltip : null,
 	
 	/**
-	 * Creates a new measure tooltip
+	 * 帮助信息提示框
+	 * @type {HTMLElement}
+	 */
+	helpTooltipElement : null,
+	
+	/**
+	 * Overlay to show the help messages.
+	 * @type {Overlay}
+	 */
+	helpTooltip : null,
+	
+	/**
+	 * 绘制多边形的提示信息
+	 * @type {string}
+	 */
+	continuePolygonMsg : '单击继续，双击结束',
+	
+	/**
+	 * 绘制线的提示信息
+	 * @type {string}
+	 */
+	/* continueLineMsg : '单击继续，双击结束', */
+	
+	pointerMoveHandler : function (evt) {
+		if (evt.dragging) {
+			return;
+		}
+		/** @type {string} */
+		var helpMsg = '点击确认起点';
+
+		if (control.sketch) {
+			var geom = control.sketch.getGeometry();
+			if (geom instanceof ol.geom.Polygon) {
+				helpMsg = control.continuePolygonMsg;
+			} else if (geom instanceof ol.geom.LineString) {
+				helpMsg = continueLineMsg;
+			}
+		}
+
+		control.helpTooltipElement.innerHTML = helpMsg;
+		control.helpTooltip.setPosition(evt.coordinate);
+
+		control.helpTooltipElement.classList.remove('hidden');
+	},
+	
+	/**
+	 * 创建【测量值】提示框
 	 */
 	createMeasureTooltip : function() {
-	  if (control.measureTooltipElement) {
-	    control.measureTooltipElement.parentNode.removeChild(control.measureTooltipElement);
-	  }
-	  control.measureTooltipElement = document.createElement('div');
-	  control.measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
-	  control.measureTooltip = new ol.Overlay({
-	    element: control.measureTooltipElement,
-	    offset: [0, -15],
-	    positioning: 'bottom-center',
-	  });
-	  map.addOverlay(control.measureTooltip);
+		if (control.measureTooltipElement) {
+			control.measureTooltipElement.parentNode.removeChild(control.measureTooltipElement);
+		}
+		control.measureTooltipElement = document.createElement('div');
+		control.measureTooltipElement.className = 'ol-tooltip ol-tooltip-measure';
+		control.measureTooltip = new ol.Overlay({
+			element: control.measureTooltipElement,
+			offset: [0, -15],
+			positioning: 'bottom-center',
+		});
+		map.addOverlay(control.measureTooltip);
+	},
+	
+	/**
+	 * 创建【帮助信息】提示框
+	 */
+	createHelpTooltip : function() {
+		if (control.helpTooltipElement) {
+			control.helpTooltipElement.parentNode.removeChild(control.helpTooltipElement);
+		}
+		control.helpTooltipElement = document.createElement('div');
+		control.helpTooltipElement.className = 'ol-tooltip hidden';
+		control.helpTooltip = new ol.Overlay({
+			element: control.helpTooltipElement,
+			offset: [15, 0],
+			positioning: 'center-left',
+		});
+		map.addOverlay(control.helpTooltip);
 	},
 	
 	/* 
@@ -51,6 +121,7 @@ var control = {
 		添加测量交互
 	 */
 	addMeasureInteraction : function(type) {
+		map.on('pointermove', control.pointerMoveHandler);
 	    //document.getElementById('map-marking-panel-title').innerHTML = type == 'area' ? '面积测量' : '长度测量';
 	    //openPanelContent(['map-marking-panel', 'measure-info']);
 	    control.clearAllMapInteraction();
@@ -61,15 +132,14 @@ var control = {
 	        style: style.styleMeasure
 	    });
 	    map.addInteraction(draw);
-	    // createMeasureTooltip();
 		control.createMeasureTooltip();
-	    // createHelpTooltip();
+	    control.createHelpTooltip();
 	    var listener;
 	    draw.on('drawstart', function(evt) {
-	        sketch = evt.feature;
+	        control.sketch = evt.feature;
 	        var tooltipCoord = evt.coordinate;
 	        // var measure_geo = document.getElementById('measure-geo').checked;
-	        listener = sketch.getGeometry().on('change', function(evt) {
+	        listener = control.sketch.getGeometry().on('change', function(evt) {
 	            var geom = evt.target;
 	            var output;
 	            if (geom instanceof ol.geom.Polygon) {
@@ -81,20 +151,15 @@ var control = {
 					output = coorf.formatLength(geom, 1);
 	                tooltipCoord = geom.getLastCoordinate()
 	            }
-	            // measureTooltipElement.innerHTML = output;
-	            // measureTooltip.setPosition(tooltipCoord)
 				control.measureTooltipElement.innerHTML = output;
-				control.measureTooltip.setPosition(tooltipCoord);
-				console.log(output);
-				$("#location-coordinate").val(output);
-				
+				control.measureTooltip.setPosition(tooltipCoord);				
 	        })
 	    }, this);
 	    draw.on('drawend', function() {
 	        // measureTooltipElement.className = 'tooltip tooltip-static';
 			control.measureTooltipElement.className = 'ol-tooltip ol-tooltip-static';
-	        measureTooltip.setOffset([0, -7]);
-	        sketch = null;
+	        control.measureTooltip.setOffset([0, -7]);
+	        control.sketch = null;
 	        control.measureTooltipElement = null;
 	        control.createMeasureTooltip();
 	        ol.Observable.unByKey(listener)
