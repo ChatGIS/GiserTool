@@ -82,5 +82,15 @@ var style = {
 				color: 'rgba(255, 255, 255, 0.2)'
 			})
 		})
+	}),
+	
+	// 定位样式
+	styleLocate : new ol.style.Style({
+		image: new ol.style.Icon({
+			src:'resource/image/locate1.png',
+			size:[64,64],
+			offset:[-16, -5]
+		})
 	})
+	
 }

@@ -29,12 +29,16 @@ $(document).ready(function () {
 	  source: new ol.source.Vector(),
 	});
 	
-	layermMeasure = new ol.layer.Vector({
+	var layermMeasure = new ol.layer.Vector({
 	    source: new ol.source.Vector()
 	});
 	
+	var layerVectorLocate = new ol.layer.Vector({
+	  source: new ol.source.Vector(),
+	});
+	
 	var layers = [gaodeTileLayer, 
-		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, layermMeasure];
+		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, layermMeasure, layerVectorLocate];
 	
 	/* 地图初始化 */
 	map = new ol.Map({
@@ -42,7 +46,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 10,
+			zoom: 19,
 			projection: 'EPSG:4326'
 		}),
 		target: 'map-div'
@@ -205,7 +209,7 @@ $(document).ready(function () {
 		var geoOlB = new ol.geom.Polygon(getPolygonCoordinateFromStr(["117.16008393", "36.74770178", "116.99097038", "36.67098166", "117.00252063", "36.59316450", "117.18466847", "36.68234177", "117.16008393", "36.74770178"]));	
 		
 		
-		var feature2 = new ol.Feature();
+		/* var feature2 = new ol.Feature();
 		feature2.setGeometry(geoOlB);
 		feature2.setStyle(style.stylePolygonGreen);
 		layerVector3.getSource().addFeature(feature2);
@@ -222,7 +226,7 @@ $(document).ready(function () {
 		var feature5 = new ol.Feature();
 		feature5.setGeometry(geoBuf);
 		feature5.setStyle(style.stylePolygonRed);
-		layerVector5.getSource().addFeature(feature5);
+		layerVector5.getSource().addFeature(feature5); */
 		
 		
 		
@@ -233,6 +237,21 @@ $(document).ready(function () {
 		});
 		$("#tool-mesure-polygon").click(function(){
 			control.addMeasureInteraction("area");
+		});
+		$("#locate-clear").click(function(){
+			$("#location-coordinate").val("");
+			layerVectorLocate.getSource().clear();
+		});
+		$("#locate").click(function(){
+			var coor = $("#location-coordinate").val();
+			var coor = coor.split(",");
+			var coorA = ol.proj.fromLonLat(coor, "EPSG:4326");
+			map.getView().setCenter(coorA);
+			var geo = new ol.geom.Point(coorA);
+			var feature = new ol.Feature();
+			feature.setGeometry(geo);
+			feature.setStyle(style.styleLocate);
+			layerVectorLocate.getSource().addFeature(feature);
 		});
 	}
 })
