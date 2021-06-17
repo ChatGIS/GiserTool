@@ -8,6 +8,13 @@ $(document).ready(function () {
 		})
 	});
 	
+	// 基于ArcGIS Server REST的瓦片地图服务
+	var layerArcGISTile = new ol.layer.Tile({
+		source: new ol.source.TileArcGISRest({
+			url: 'http://sampleserver1.arcgisonline.com/ArcGIS/rest/services/Specialty/ESRI_StateCityHighway_USA/MapServer'
+		})
+	});
+	
 	/* 预定义图层 */		
 	var layerVector1 = new ol.layer.Vector({
 	  source: new ol.source.Vector(),
@@ -37,8 +44,9 @@ $(document).ready(function () {
 	  source: new ol.source.Vector(),
 	});
 	
-	var layers = [gaodeTileLayer, 
-		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, layermMeasure, layerVectorLocate];
+	var layers = [gaodeTileLayer, layerArcGISTile,
+		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
+		layermMeasure, layerVectorLocate];
 	
 	/* 地图初始化 */
 	map = new ol.Map({
