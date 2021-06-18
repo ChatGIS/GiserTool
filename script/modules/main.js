@@ -15,6 +15,14 @@ $(document).ready(function () {
 		})
 	});
 	
+	// 加载GeoJSON数据
+	var layerGeoJsonChina = new ol.layer.Vector({
+		source: new ol.source.Vector({
+			url:"resource/geodata/ChinaRegion1.geojson",
+			format: new ol.format.GeoJSON()
+		})
+	});
+	
 	/* 预定义图层 */		
 	var layerVector1 = new ol.layer.Vector({
 	  source: new ol.source.Vector(),
@@ -46,7 +54,7 @@ $(document).ready(function () {
 	
 	var layers = [gaodeTileLayer, layerArcGISTile,
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
-		layermMeasure, layerVectorLocate];
+		layermMeasure, layerVectorLocate, layerGeoJsonChina];
 	
 	/* 地图初始化 */
 	map = new ol.Map({
@@ -54,7 +62,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 19,
+			zoom: 6,
 			projection: 'EPSG:4326'
 		}),
 		target: 'map-div'
