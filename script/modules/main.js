@@ -8,6 +8,11 @@ $(document).ready(function () {
 		})
 	});
 	
+	// OpenStreetMap底图
+	var osmTileLayer = new ol.layer.Tile({
+		source: new ol.source.OSM()
+	});
+	
 	// 基于ArcGIS Server REST的瓦片地图服务
 	var layerArcGISTile = new ol.layer.Tile({
 		source: new ol.source.TileArcGISRest({
@@ -44,12 +49,12 @@ $(document).ready(function () {
 	  source: new ol.source.Vector(),
 	});
 	
-	var layermMeasure = new ol.layer.Vector({
+	layermMeasure = new ol.layer.Vector({
 	    source: new ol.source.Vector()
 	});
 	
 	var layerVectorLocate = new ol.layer.Vector({
-	  source: new ol.source.Vector(),
+	  source: new ol.source.Vector()
 	});
 	
 	var layers = [gaodeTileLayer, layerArcGISTile,
@@ -66,7 +71,7 @@ $(document).ready(function () {
 			projection: 'EPSG:4326'
 		}),
 		target: 'map-div'
-	})
+	});
 	var sourceProj =map.getView().getProjection();
 	console.log(sourceProj);
 	var scaleLineControl = new ol.control.ScaleLine({
@@ -159,72 +164,13 @@ $(document).ready(function () {
 	}
 	
 	function testJsts(){
-		var geoobj = {
-			"type": "FeatureCollection",
-			"crs": {
-				"type": "name",
-				"properties": {
-					"name": "EPSG:4326"
-				}
-			},
-			"features": [
-				{
-					"type": "Feature",
-					"geometry": {
-						"type": "Polygon",
-						"coordinates": [
-							[
-								[
-									116.49288752,37.00801792
-								],
-								[
-									117.38058286,36.94869175
-								],
-								[
-									117.41793631,36.27852573
-								],
-								[
-									116.26437188,36.25215853
-								],
-								[
-									116.49288752,37.00801792
-								]
-							],
-							[
-								[
-									116.67855644,36.75862828
-								],
-								[
-									117.04330254,36.77730500
-								],
-								[
-									117.13888364,36.43782749
-								],
-								[
-									116.61703302,36.51143590
-								],
-								[
-									116.67855644,36.75862828
-								]
-							]
-						]
-					},
-					"properties": {
-						"NAME_CHN": "泽州县"
-					}
-				}
-			]
-		};
-		
-		
-		
-		var featureOl = new ol.format.GeoJSON().readFeatures(geoobj);
+		/* var featureOl = new ol.format.GeoJSON().readFeatures(geoobj);
 		var geoOlA = featureOl[0].getGeometry();
 		var jsts_OL3Parser = new jsts.io.OL3Parser();
 		var geo = jsts_OL3Parser.read(geoOlA);		
 		var geoOlB = new ol.geom.Polygon(getPolygonCoordinateFromStr(["117.16008393", "36.74770178", "116.99097038", "36.67098166", "117.00252063", "36.59316450", "117.18466847", "36.68234177", "117.16008393", "36.74770178"]));	
 		
-		
+		 */
 		/* var feature2 = new ol.Feature();
 		feature2.setGeometry(geoOlB);
 		feature2.setStyle(style.stylePolygonGreen);

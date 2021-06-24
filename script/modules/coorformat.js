@@ -67,4 +67,49 @@ var coorf = {
 	    }
 	    return output;
 	},
+	
+	transLonlatArr : function(arr,scor,tcor){ //坐标转化   
+			var obj = {};
+			obj.cor = tcor;
+			if(scor == tcor ){   //相同坐标不转为
+				obj.arr = arr;
+			}else if(scor == 1 && tcor == 2){  //标准坐标4326转为火星坐标4326
+				obj.arr = gcsp.util.corToArr(arr,true);
+			}else if(scor == 2 && tcor == 1){  //火星坐标转4326为标准坐标4326
+				obj.arr = gcsp.util.corFromArr(arr,true);
+			}else if(scor == 1 && tcor == 3){  //标准坐标4326转为900913，中间要用火星坐标
+				//obj.arr = gcsp.util.transto9(arr);
+				obj.arr = gcsp.util.transLonlatArr(arr, 1, 2).arr;
+				obj.arr = gcsp.util.transto9(obj.arr);
+			}else if(scor == 3 && tcor == 1){  //900913转为标准坐标4326，中间要用火星坐标
+				//obj.arr = gcsp.util.transfrom9(arr);
+				obj.arr = gcsp.util.transfrom9(arr);
+				obj.arr = gcsp.util.transLonlatArr(obj.arr, 1, 2).arr;
+	        }else if(scor == 2 && tcor == 3){  //火星坐标4326转为900913
+	        	//obj.arr = gcsp.util.transLonlatArr(arr, 2, 1).arr;
+	        	//obj.arr = gcsp.util.transto9(obj.arr);
+	        	obj.arr = gcsp.util.transto9(arr);
+			}else if(scor == 3 && tcor == 2){  //900913转为火星坐标4326
+				//obj.arr = gcsp.util.transfrom9(arr);
+				//obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
+				obj.arr = gcsp.util.transfrom9(arr);
+			}else if(scor == 1 && tcor == 4){  //标准坐标到百度坐标
+				obj.arr = gcsp.util.corToArr(arr,true);
+				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
+			}else if(scor == 2 && tcor == 4){  //火星坐标到百度坐标
+				obj.arr = gcsp.util.bdFromArr(arr);
+			}else if(scor == 3 && tcor == 4){  //900913到百度坐标
+				obj.arr = gcsp.util.transLonlatArr(arr, 3, 2).arr;
+				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
+			}else if(scor == 4 && tcor == 1){  //百度坐标到标准坐标
+				obj.arr = gcsp.util.bdToArr(arr);
+				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
+			}else if(scor == 4 && tcor == 2){  //百度坐标到火星坐标
+				obj.arr = gcsp.util.bdToArr(arr);
+			}else if(scor == 4 && tcor == 3){  //百度坐标到900913
+				obj.arr = gcsp.util.bdToArr(arr);
+				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 3).arr;
+			}
+			return obj;
+		},
 }
