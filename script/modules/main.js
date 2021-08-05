@@ -67,7 +67,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 6,
+			zoom: 16,
 			projection: 'EPSG:4326'
 		}),
 		target: 'map-div'
@@ -121,7 +121,22 @@ $(document).ready(function () {
 		if(flag == 1){
 			$(".map-location").show();
 		}
-	}
+	};
+	// 地理编码
+	$("#geocode_btn").click(function(){
+		var addressText = $("#geocode_text").val(); 
+		var url = "https://restapi.amap.com/v3/geocode/geo?key=adfb98c21100fabc1340f95e8531d353&address=" + addressText;
+		//$.get(url);
+		$.ajax({
+		  url: url,
+		  //data: data,
+		  success: function(response){
+			  console.log(response);
+			  $("#geocode_text_re").val(response.geocodes[0].location);
+		  },
+		  //dataType: dataType
+		});
+	});
 	
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
@@ -135,7 +150,29 @@ $(document).ready(function () {
 		$("#message2").text("剪切成功!").show(300).delay(3000).hide(300); 
 	});
 	
-	testJsts();
+	$("#tool-mesure-line").click(function(){
+		control.addMeasureInteraction("line");
+	});
+	$("#tool-mesure-polygon").click(function(){
+		control.addMeasureInteraction("area");
+	});
+	$("#locate-clear").click(function(){
+		$("#location-coordinate").val("");
+		layerVectorLocate.getSource().clear();
+	});
+	$("#locate").click(function(){
+		var coor = $("#location-coordinate").val();
+		var coor = coor.split(",");
+		var coorA = ol.proj.fromLonLat(coor, "EPSG:4326");
+		map.getView().setCenter(coorA);
+		var geo = new ol.geom.Point(coorA);
+		var feature = new ol.Feature();
+		feature.setGeometry(geo);
+		feature.setStyle(style.styleLocate);
+		layerVectorLocate.getSource().addFeature(feature);
+	});
+	
+	//testJsts();
 	function getPolygonCoordinateFromStr(lonlats){
 		var array3 = [];
 		if (!lonlats || lonlats == "") {
@@ -192,28 +229,8 @@ $(document).ready(function () {
 		
 		
 		
-		/* $("#tool-mesure-line").click(addMeasureInteraction("line"));
-		$("#tool-mesure-polygon").click(addMeasureInteraction("area")); */
-		$("#tool-mesure-line").click(function(){
-			control.addMeasureInteraction("line");
-		});
-		$("#tool-mesure-polygon").click(function(){
-			control.addMeasureInteraction("area");
-		});
-		$("#locate-clear").click(function(){
-			$("#location-coordinate").val("");
-			layerVectorLocate.getSource().clear();
-		});
-		$("#locate").click(function(){
-			var coor = $("#location-coordinate").val();
-			var coor = coor.split(",");
-			var coorA = ol.proj.fromLonLat(coor, "EPSG:4326");
-			map.getView().setCenter(coorA);
-			var geo = new ol.geom.Point(coorA);
-			var feature = new ol.Feature();
-			feature.setGeometry(geo);
-			feature.setStyle(style.styleLocate);
-			layerVectorLocate.getSource().addFeature(feature);
-		});
+		$("#tool-mesure-line").click(addMeasureInteraction("line"));
+		$("#tool-mesure-polygon").click(addMeasureInteraction("area"));
+	
 	}
 })
