@@ -28,16 +28,27 @@
 	<body>
 		<div id="map-div" class="map-container"></div>
 		<div class="map-toolbox">
-			<span id="tool-mesure-line">测距</span>
-			<span id="tool-mesure-polygon">测面</span>
-			<span id="map-tool-location" onclick="showDiv()">定位</span>
-			<span onclick="showDiv(2)">拾取</span>
+			<a id="tool-mesure-line" class="toolbox-item">
+				<span>测距</span>
+			</a>
+			<a id="tool-mesure-polygon" class="toolbox-item">
+				<span>测面</span>
+			</a>
+			<a id="map-location-btn" class="toolbox-item">
+				<span>定位</span>
+			</a>
+			<a id="map-getcoor-btn" class="toolbox-item">
+				<span>拾取</span>
+			</a>
+			<a id="api-geocode-btn" class="toolbox-item">
+				<span>编码</span>
+			</a>
 		</div>
 		<div id="map-info " class="map-info">
 			<span>缩放级别：</span><label id="zoom-level">5</label>
 			<span>鼠标位置：</span><label id="mouse-coordinate">未获取到鼠标位置</label>
 		</div>
-		<div class="map-location boxpanel" style="display: block;">
+		<div class="map-location boxpanel" style="display: none;">
 			<div class="panel_header">坐标定位</div>
 			<div class="panel_body">
 				<div>
@@ -49,7 +60,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="map-getcoor boxpanel" style="display: block;">
+		<div class="map-getcoor boxpanel" style="display: none;">
 			<div class="panel_header">坐标拾取</div>
 			<div class="panel_body">
 				<div>
@@ -62,7 +73,7 @@
 			</div>
 		</div>
 		
-		<div class="geocode boxpanel" style="display: block;">
+		<div class="api-geocode boxpanel" style="display: none;">
 			<div class="panel_header">高德编码API</div>
 			<div class="panel_body">
 				<div>

@@ -32,7 +32,9 @@ html,body {
     margin-right: 20px;
 }
 
-/* 地图工具栏 */
+/* 
+	地图工具栏
+*/
 .map-toolbox {
 	position: absolute;
 	top: 10px;
@@ -44,45 +46,20 @@ html,body {
 	border-radius:3px;
 }
 
-/* 地图定位弹框 */
-.map-location {
+.toolbox-item {
+	line-height: 40px;	/* 实现垂直居中 */
+	padding-left: 20px;	/* 左右位置 */
+	cursor: pointer;	/* 鼠标变小手 */
+}
+/* 
+	弹框样式:开始 
+*/
+.boxpanel {
+	padding: 12px;
 	position: absolute;
 	top: 50px;
 	right: 10px;
-	height: 110px;
-	text-align: center;
-	width: 25%;
-	background-color: rgba(255, 255, 255, 0.8);
-	border-radius:3px;
-}
-
-/* 地图坐标拾取弹框 */
-.map-getcoor {
-	position: absolute;
-	top: 250px;
-	right: 10px;
-	height: 110px;
-	text-align: center;
-	width: 25%;
-	background-color: rgba(255, 255, 255, 0.8);
-	border-radius:3px;
-}
-
-/* 地理编码弹框 */
-.geocode {
-	position: absolute;
-	top: 370px;
-	right: 10px;
-	height: 110px;
-	text-align: center;
-	width: 25%;
-	background-color: rgba(255, 255, 255, 0.8);
-	border-radius:3px;
-}
-
-/* 弹框样式 */
-.boxpanel {
-	padding: 12px;
+	height: 200px;
 }
 
 .boxpanel .panel_header {
@@ -95,6 +72,37 @@ html,body {
 .boxpanel .panel_body div {
 	padding-top: 10px;
 }
+
+/* 地图定位弹框 */
+.map-location {
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius:3px;
+}
+
+/* 地图坐标拾取弹框 */
+.map-getcoor {
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius:3px;
+}
+
+/* 地理编码弹框 */
+.api-geocode {
+	text-align: center;
+	width: 25%;
+	background-color: rgba(255, 255, 255, 0.8);
+	border-radius:3px;
+}
+
+.active {
+	color: #009cf9
+}
+/* 
+	弹框样式:结束
+*/
 
 /* 提示框样式-开始 */
 .ol-tooltip {

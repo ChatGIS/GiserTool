@@ -112,16 +112,47 @@ $(document).ready(function () {
 		/* $("#coordinate_wgs84").val(gcj_decrypt_exact(parseFloat(evt.coordinate[1]), parseFloat(evt.coordinate[0]))); */
 	})
 	
-	$("#map-tool-location").click(function(){
-	    showDiv(1);
+	/* 
+		弹框类JS
+		date:20210806
+	*/
+	var showFlag = 0;
+	$("#map-location-btn").click(function(){
+		if(showFlag == 0){
+			showFlag = 1;
+			$(".map-location").show();
+			$(this).addClass("active");
+		} else {
+			showFlag = 0;
+			$(".map-location").hide();
+			$(this).removeClass("active");
+		}
 	});
 	
-	function showDiv(flag){
-		debugger
-		if(flag == 1){
-			$(".map-location").show();
+	$("#map-getcoor-btn").click(function(){
+		if(showFlag == 0){
+			showFlag = 1;
+			$(".map-getcoor").show();
+			$(this).addClass("active");
+		} else {
+			showFlag = 0;
+			$(".map-getcoor").hide();
+			$(this).removeClass("active");
 		}
-	};
+	});
+	
+	$("#api-geocode-btn").click(function(){
+		if(showFlag == 0){
+			showFlag = 1;
+			$(".api-geocode").show();
+			$(this).addClass("active");
+		} else {
+			showFlag = 0;
+			$(".api-geocode").hide();
+			$(this).removeClass("active");
+		}
+	});
+	
 	// 地理编码
 	$("#geocode_btn").click(function(){
 		var addressText = $("#geocode_text").val(); 
