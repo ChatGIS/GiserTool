@@ -84,13 +84,33 @@ var style = {
 		})
 	}),
 	
-	// 定位样式
-	styleLocate : new ol.style.Style({
+	// 定位样式:百度
+	styleLocateBD : new ol.style.Style({
 		image: new ol.style.Icon({
 			src:'resource/image/locate1.png',
 			size:[64,64],
 			offset:[-16, -5]
+		}),
+		text: new ol.style.Text({
+			text:"BD09",
+			font:"15px bold Serif",
+			offsetX:0,
+			offsetY:-10
+		})
+	}),
+	
+	// 定位样式:GCj
+	styleLocateGCj : new ol.style.Style({
+		image: new ol.style.Icon({
+			src:'resource/image/locate1.png',
+			size:[64,64],
+			offset:[-16, -5]
+		}),
+		text: new ol.style.Text({
+			text:"GCj02",
+			font:"15px sans-serif",
+			offsetX:0,
+			offsetY:-10
 		})
 	})
-	
 }

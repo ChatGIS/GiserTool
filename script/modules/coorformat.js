@@ -68,48 +68,83 @@ var coorf = {
 	    return output;
 	},
 	
-	transLonlatArr : function(arr,scor,tcor){ //坐标转化   
-			var obj = {};
-			obj.cor = tcor;
-			if(scor == tcor ){   //相同坐标不转为
-				obj.arr = arr;
-			}else if(scor == 1 && tcor == 2){  //标准坐标4326转为火星坐标4326
-				obj.arr = gcsp.util.corToArr(arr,true);
-			}else if(scor == 2 && tcor == 1){  //火星坐标转4326为标准坐标4326
-				obj.arr = gcsp.util.corFromArr(arr,true);
-			}else if(scor == 1 && tcor == 3){  //标准坐标4326转为900913，中间要用火星坐标
-				//obj.arr = gcsp.util.transto9(arr);
-				obj.arr = gcsp.util.transLonlatArr(arr, 1, 2).arr;
-				obj.arr = gcsp.util.transto9(obj.arr);
-			}else if(scor == 3 && tcor == 1){  //900913转为标准坐标4326，中间要用火星坐标
-				//obj.arr = gcsp.util.transfrom9(arr);
-				obj.arr = gcsp.util.transfrom9(arr);
-				obj.arr = gcsp.util.transLonlatArr(obj.arr, 1, 2).arr;
-	        }else if(scor == 2 && tcor == 3){  //火星坐标4326转为900913
-	        	//obj.arr = gcsp.util.transLonlatArr(arr, 2, 1).arr;
-	        	//obj.arr = gcsp.util.transto9(obj.arr);
-	        	obj.arr = gcsp.util.transto9(arr);
-			}else if(scor == 3 && tcor == 2){  //900913转为火星坐标4326
-				//obj.arr = gcsp.util.transfrom9(arr);
-				//obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
-				obj.arr = gcsp.util.transfrom9(arr);
-			}else if(scor == 1 && tcor == 4){  //标准坐标到百度坐标
-				obj.arr = gcsp.util.corToArr(arr,true);
-				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
-			}else if(scor == 2 && tcor == 4){  //火星坐标到百度坐标
-				obj.arr = gcsp.util.bdFromArr(arr);
-			}else if(scor == 3 && tcor == 4){  //900913到百度坐标
-				obj.arr = gcsp.util.transLonlatArr(arr, 3, 2).arr;
-				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
-			}else if(scor == 4 && tcor == 1){  //百度坐标到标准坐标
-				obj.arr = gcsp.util.bdToArr(arr);
-				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
-			}else if(scor == 4 && tcor == 2){  //百度坐标到火星坐标
-				obj.arr = gcsp.util.bdToArr(arr);
-			}else if(scor == 4 && tcor == 3){  //百度坐标到900913
-				obj.arr = gcsp.util.bdToArr(arr);
-				obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 3).arr;
-			}
-			return obj;
-		},
+	/* 
+		坐标转换
+	 */
+	transLonlat : function(coor, fcs, tcs){   
+		var obj = {};
+		if(fcs == tcs ){   //相同坐标不转为
+			obj.coor = coor;
+		}else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
+			obj.arr = gcsp.util.corToArr(arr,true);
+		}else if(fcs == 2 && tcs == 1){  //火星坐标转4326为标准坐标4326
+			obj.arr = gcsp.util.corFromArr(arr,true);
+		}else if(fcs == 1 && tcs == 3){  //标准坐标4326转为900913，中间要用火星坐标
+			//obj.arr = gcsp.util.transto9(arr);
+			obj.arr = gcsp.util.transLonlatArr(arr, 1, 2).arr;
+			obj.arr = gcsp.util.transto9(obj.arr);
+		}else if(fcs == 3 && tcs == 1){  //900913转为标准坐标4326，中间要用火星坐标
+			//obj.arr = gcsp.util.transfrom9(arr);
+			obj.arr = gcsp.util.transfrom9(arr);
+			obj.arr = gcsp.util.transLonlatArr(obj.arr, 1, 2).arr;
+		}else if(fcs == 2 && tcs == 3){  //火星坐标4326转为900913
+			//obj.arr = gcsp.util.transLonlatArr(arr, 2, 1).arr;
+			//obj.arr = gcsp.util.transto9(obj.arr);
+			obj.arr = gcsp.util.transto9(arr);
+		}else if(fcs == 3 && tcs == 2){  //900913转为火星坐标4326
+			//obj.arr = gcsp.util.transfrom9(arr);
+			//obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
+			obj.arr = gcsp.util.transfrom9(arr);
+		}else if(fcs == 1 && tcs == 4){  //标准坐标到百度坐标
+			obj.arr = gcsp.util.corToArr(arr,true);
+			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
+		}else if(fcs == 2 && tcs == 4){  //火星坐标到百度坐标
+			obj.arr = gcsp.util.bdFromArr(arr);
+		}else if(fcs == 3 && tcs == 4){  //900913到百度坐标
+			obj.arr = gcsp.util.transLonlatArr(arr, 3, 2).arr;
+			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 4).arr;
+		}else if(fcs == 4 && tcs == 1){  //百度坐标到标准坐标
+			obj.arr = gcsp.util.bdToArr(arr);
+			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 1).arr;
+		}else if(fcs == 4 && tcs == 2){  //百度坐标到火星坐标
+			obj.arr = gcsp.util.bdToArr(arr);
+		}else if(fcs == 4 && tcs == 3){  //百度坐标到900913
+			obj.arr = gcsp.util.bdToArr(arr);
+			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 3).arr;
+		}
+		return obj;
+	},
+	
+	/* 
+		源坐标类型：
+		1：GPS标准坐标（wgs84）；
+		2：搜狗地图坐标；
+		3：火星坐标（gcj02），即高德地图、腾讯地图和MapABC等地图使用的坐标；
+		4：3中列举的地图坐标对应的墨卡托平面坐标;
+		5：百度地图采用的经纬度坐标（bd09ll）；
+		6：百度地图采用的墨卡托平面坐标（bd09mc）;
+		7：图吧地图坐标；
+		8：51地图坐标；
+		
+		目标坐标类型：
+		3：火星坐标（gcj02），即高德地图、腾讯地图及MapABC等地图使用的坐标；
+		5：百度地图采用的经纬度坐标（bd09ll）；
+		6：百度地图采用的墨卡托平面坐标（bd09mc）；
+	 */
+	transLonlatBD : function(coor, fcs, tcs){
+		var coorObj = {};
+		$.ajax({
+			url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from="+fcs+"&to="+tcs+"&ak=" + mapkey.bdKey +"&callback=?",
+			// url:"https://restapi.amap.com/v3/geocode/geo?key=" + mapkey.gdKey + "=" + "济南市高新万达",
+			async: false, // 
+			//dataType:'JSONP',  // 解决跨域问题
+			success: function(response){
+				var coor = response.result[0].x + "," + response.result[0].y;
+				console.log("百度坐标" + coor);
+				coorObj.coor = coor.split(",");
+				// return coorObj;
+				callBack(coor);
+			},
+		});
+	}
 }

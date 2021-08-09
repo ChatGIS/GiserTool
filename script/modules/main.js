@@ -153,14 +153,63 @@ $(document).ready(function () {
 		}
 	});
 	
+	// 定位清空
+	$("#locate-clear").click(function(){
+		$("#location-coordinate").val("");
+		layerVectorLocate.getSource().clear();
+	});
+	
+	// 定位
+	$("#locate").click(function(){
+		var coor = $("#location-coordinate").val();
+		if(coor.trim() == ""){
+			alert("定位坐标为空！");
+			return;
+		}
+		var coor = coor.split(",");
+		var coorObj = coorf.transLonlatBD(coor, 3, 5);
+		/* $.ajax({
+			url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,
+			async: false,
+			dataType:'JSONP',  // 解决跨域问题
+			success: function(response){
+				var coor1 = response.result[0].x + "," + response.result[0].y;
+				console.log("百度坐标" + coor1);
+				coor = coor1.split(",");
+				var coorA = coor;
+				map.getView().setCenter(coorA);
+				var geo = new ol.geom.Point(coorA);
+				var feature = new ol.Feature();
+				feature.setGeometry(geo);
+				feature.setStyle(style.styleLocateBD);
+				layerVectorLocate.getSource().addFeature(feature);
+			},
+		}); */
+		var coorA = coor;
+		map.getView().setCenter(coorA);
+		var geo = new ol.geom.Point(coorA);
+		var feature = new ol.Feature();
+		feature.setGeometry(geo);
+		feature.setStyle(style.styleLocateGCj);
+		layerVectorLocate.getSource().addFeature(feature);
+	});
+	
+	function callBack(coor){
+		var coorA = coor;
+		map.getView().setCenter(coorA);
+		var geo = new ol.geom.Point(coorA);
+		var feature = new ol.Feature();
+		feature.setGeometry(geo);
+		feature.setStyle(style.styleLocate);
+		layerVectorLocate.getSource().addFeature(feature);
+	}
 	// 地理编码
 	$("#geocode_btn").click(function(){
 		var addressText = $("#geocode_text").val(); 
-		var url = "https://restapi.amap.com/v3/geocode/geo?key=adfb98c21100fabc1340f95e8531d353&address=" + addressText;
+		var url = "https://restapi.amap.com/v3/geocode/geo?key=" + mapkey.gdKey + "=" + addressText;
 		//$.get(url);
 		$.ajax({
 		  url: url,
-		  //data: data,
 		  success: function(response){
 			  console.log(response);
 			  $("#geocode_text_re").val(response.geocodes[0].location);
@@ -187,21 +236,7 @@ $(document).ready(function () {
 	$("#tool-mesure-polygon").click(function(){
 		control.addMeasureInteraction("area");
 	});
-	$("#locate-clear").click(function(){
-		$("#location-coordinate").val("");
-		layerVectorLocate.getSource().clear();
-	});
-	$("#locate").click(function(){
-		var coor = $("#location-coordinate").val();
-		var coor = coor.split(",");
-		var coorA = ol.proj.fromLonLat(coor, "EPSG:4326");
-		map.getView().setCenter(coorA);
-		var geo = new ol.geom.Point(coorA);
-		var feature = new ol.Feature();
-		feature.setGeometry(geo);
-		feature.setStyle(style.styleLocate);
-		layerVectorLocate.getSource().addFeature(feature);
-	});
+	
 	
 	//testJsts();
 	function getPolygonCoordinateFromStr(lonlats){
