@@ -167,7 +167,15 @@ $(document).ready(function () {
 			return;
 		}
 		var coor = coor.split(",");
-		var coorObj = coorf.transLonlatBD(coor, 3, 5);
+		var coorObj = coorf.transLonlat(coor, 1, 3);
+		var coorB = coorObj.coor;
+		map.getView().setCenter(coorB);
+		var geoB = new ol.geom.Point(coorB);
+		var featureB = new ol.Feature();
+		featureB.setGeometry(geoB);
+		featureB.setStyle(style.styleLocateBD);
+		layerVectorLocate.getSource().addFeature(featureB);
+		// var coorObj = coorf.transLonlatBD(coor, 3, 5);
 		/* $.ajax({
 			url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,
 			async: false,

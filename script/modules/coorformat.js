@@ -1,4 +1,6 @@
 var coorf = {
+	
+	x_pi: 3.14159265358979324 * 3000.0 / 180.0,
 	/**
 	 * Format length output.
 	 * @param {ol.geom.LineString} line The line.
@@ -75,7 +77,12 @@ var coorf = {
 		var obj = {};
 		if(fcs == tcs ){   //相同坐标不转为
 			obj.coor = coor;
-		}else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
+		}else if(fcs == 1 && tcs == 3){  // GCJ02转为BD09
+			obj.coor = coorf.transGcjToBd(coor);
+		}else if(fcs == 3 && tcs == 1){  // BD09转为GCJ02
+			obj.coor = gcsp.util.corToArr(arr,true);
+		}
+		/* else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
 			obj.arr = gcsp.util.corToArr(arr,true);
 		}else if(fcs == 2 && tcs == 1){  //火星坐标转4326为标准坐标4326
 			obj.arr = gcsp.util.corFromArr(arr,true);
@@ -111,8 +118,42 @@ var coorf = {
 		}else if(fcs == 4 && tcs == 3){  //百度坐标到900913
 			obj.arr = gcsp.util.bdToArr(arr);
 			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 3).arr;
-		}
+		} */
 		return obj;
+	},
+	
+	transGcjToBd: function (arr) {  // 火星坐标转为百度
+		var returnArr = [];
+		var length = arr.length;
+		for (var i = 0; i < length; i = i + 2) {
+		   if(i+2>length)continue;
+		   var lon = parseFloat(arr[i]);
+		   var lat = parseFloat(arr[i+1]);
+		   var ll = coorf.bd_encrypt(lat, lon);
+		   returnArr.push(parseFloat(ll.lon));
+		   returnArr.push(parseFloat(ll.lat));
+		}
+		return returnArr;
+	},
+		
+	//GCJ-02 to BD-09
+	bd_encrypt : function (gcjLat, gcjLon) {
+		var x = gcjLon, y = gcjLat; 
+		var z = Math.sqrt(x * x + y * y) + 0.00002 * Math.sin(y * this .x_pi); 
+		var theta = Math.atan2(y, x) + 0.000003 * Math.cos(x * this .x_pi); 
+		bdLon = z * Math.cos(theta) + 0.0065; 
+		bdLat = z * Math.sin(theta) + 0.006;
+		return { 'lat' : bdLat, 'lon' : bdLon};
+	},
+	
+	//BD-09 to GCJ-02
+	bd_decrypt : function (bdLat, bdLon) {
+		var x = bdLon - 0.0065, y = bdLat - 0.006; 
+		var z = Math.sqrt(x * x + y * y) - 0.00002 * Math.sin(y * this .x_pi); 
+		var theta = Math.atan2(y, x) - 0.000003 * Math.cos(x * this .x_pi); 
+		var gcjLon = z * Math.cos(theta); 
+		var gcjLat = z * Math.sin(theta);
+		return { 'lat' : gcjLat, 'lon' : gcjLon};
 	},
 	
 	/* 
@@ -136,8 +177,8 @@ var coorf = {
 		$.ajax({
 			url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from="+fcs+"&to="+tcs+"&ak=" + mapkey.bdKey +"&callback=?",
 			// url:"https://restapi.amap.com/v3/geocode/geo?key=" + mapkey.gdKey + "=" + "济南市高新万达",
-			async: false, // 
-			//dataType:'JSONP',  // 解决跨域问题
+			async: false, // dataType:'JSONP'时，不起作用
+			// dataType:'JSONP',  // 解决跨域问题
 			success: function(response){
 				var coor = response.result[0].x + "," + response.result[0].y;
 				console.log("百度坐标" + coor);
