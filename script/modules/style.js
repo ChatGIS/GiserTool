@@ -92,9 +92,9 @@ var style = {
 			offset:[-16, -5]
 		}),
 		text: new ol.style.Text({
-			text:"BD09",
+			text:"BD-09",
 			font:"15px bold Serif",
-			offsetX:0,
+			offsetX:-3,
 			offsetY:-10
 		})
 	}),
@@ -107,9 +107,9 @@ var style = {
 			offset:[-16, -5]
 		}),
 		text: new ol.style.Text({
-			text:"GCj02",
+			text:"GCj-02",
 			font:"15px sans-serif",
-			offsetX:0,
+			offsetX:-3,
 			offsetY:-10
 		})
 	})

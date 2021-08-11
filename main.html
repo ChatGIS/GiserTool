@@ -48,19 +48,29 @@
 			<span>缩放级别：</span><label id="zoom-level">5</label>
 			<span>鼠标位置：</span><label id="mouse-coordinate">未获取到鼠标位置</label>
 		</div>
-		<div class="map-location boxpanel" style="display: none;">
+		<div class="map-location boxpanel nodisplay">
 			<div class="panel_header">坐标定位</div>
 			<div class="panel_body">
 				<div>
 					<input type="text" id="location-coordinate"/>
 				</div>
 				<div>
+					<label><input type="radio" name="gcs" value="GCJ02" checked="checked">GCJ-02</label>
+					<label><input type="radio" name="gcs" value="WGS84">WGS84</label>
+					<label><input type="radio" name="gcs" value="BD09">BD-09</label>
+				</div>
+				<div>
 					<input type="button" id="locate" value="定位"/>
 					<input type="button" id="locate-clear" value="清空"/>
 				</div>
+				<div id="coor-trans-result" class="nodisplay">
+					<label>转换输出：</label>
+					<textarea>
+					</textarea>
+				</div>
 			</div>
 		</div>
-		<div class="map-getcoor boxpanel" style="display: none;">
+		<div class="map-getcoor boxpanel nodisplay">
 			<div class="panel_header">坐标拾取</div>
 			<div class="panel_body">
 				<div>
@@ -73,7 +83,7 @@
 			</div>
 		</div>
 		
-		<div class="api-geocode boxpanel" style="display: none;">
+		<div class="api-geocode boxpanel nodisplay">
 			<div class="panel_header">高德编码API</div>
 			<div class="panel_body">
 				<div>

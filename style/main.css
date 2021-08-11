@@ -54,12 +54,16 @@ html,body {
 /* 
 	弹框样式:开始 
 */
+.nodisplay {
+	display: none;
+}
+
 .boxpanel {
 	padding: 12px;
 	position: absolute;
 	top: 50px;
 	right: 10px;
-	height: 200px;
+	height: 276px;
 }
 
 .boxpanel .panel_header {
@@ -76,9 +80,18 @@ html,body {
 /* 地图定位弹框 */
 .map-location {
 	text-align: center;
-	width: 25%;
+	width: 16%;
 	background-color: rgba(255, 255, 255, 0.8);
 	border-radius:3px;
+}
+
+#coor-trans-result label {
+	float: left;
+}
+
+#coor-trans-result textarea {
+	width: 98%;
+	height: 80px;
 }
 
 /* 地图坐标拾取弹框 */

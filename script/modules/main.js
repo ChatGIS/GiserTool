@@ -161,41 +161,59 @@ $(document).ready(function () {
 	
 	// 定位
 	$("#locate").click(function(){
+		var coorG = "";	// GCJ坐标
+		var coorB = ""; // 百度坐标
+		var coorW = "";	// WGS84坐标
+		var result = "";
 		var coor = $("#location-coordinate").val();
 		if(coor.trim() == ""){
 			alert("定位坐标为空！");
 			return;
 		}
+		
+		if(1 == 1){
+			coorG = coor;
+		}
+		
 		var coor = coor.split(",");
 		var coorObj = coorf.transLonlat(coor, 1, 3);
-		var coorB = coorObj.coor;
+		coorB = coorObj.coor;
+		
+		// 转换结果输出框
+		result += "GCJ-02：" + coorG + "\r\n";
+		result += "WGS84：" + coorW + "\r\n";
+		result += "BD-09：" + coorB + "\r\n";
+		$("#coor-trans-result textarea").val(result);
+		$("#coor-trans-result").show();
+		
+		// 定位坐标显示
 		map.getView().setCenter(coorB);
 		var geoB = new ol.geom.Point(coorB);
 		var featureB = new ol.Feature();
 		featureB.setGeometry(geoB);
 		featureB.setStyle(style.styleLocateBD);
 		layerVectorLocate.getSource().addFeature(featureB);
-		// var coorObj = coorf.transLonlatBD(coor, 3, 5);
-		/* $.ajax({
-			url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,
-			async: false,
-			dataType:'JSONP',  // 解决跨域问题
-			success: function(response){
-				var coor1 = response.result[0].x + "," + response.result[0].y;
-				console.log("百度坐标" + coor1);
-				coor = coor1.split(",");
-				var coorA = coor;
-				map.getView().setCenter(coorA);
-				var geo = new ol.geom.Point(coorA);
-				var feature = new ol.Feature();
-				feature.setGeometry(geo);
-				feature.setStyle(style.styleLocateBD);
-				layerVectorLocate.getSource().addFeature(feature);
-			},
-		}); */
-		var coorA = coor;
-		map.getView().setCenter(coorA);
-		var geo = new ol.geom.Point(coorA);
+		// 调用百度API
+		// $.ajax({
+		// 	url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,
+		// 	async: false,
+		// 	dataType:'JSONP',  // 解决跨域问题
+		// 	success: function(response){
+		// 		var coor1 = response.result[0].x + "," + response.result[0].y;
+		// 		console.log("百度坐标" + coor1);
+		// 		coor = coor1.split(",");
+		// 		var coorG = coor;
+		// 		map.getView().setCenter(coorG);
+		// 		var geo = new ol.geom.Point(coorG);
+		// 		var feature = new ol.Feature();
+		// 		feature.setGeometry(geo);
+		// 		feature.setStyle(style.styleLocateGCj);
+		// 		layerVectorLocate.getSource().addFeature(feature);
+		// 	},
+		// });
+		var coorG = coor;
+		map.getView().setCenter(coorG);
+		var geo = new ol.geom.Point(coorG);
 		var feature = new ol.Feature();
 		feature.setGeometry(geo);
 		feature.setStyle(style.styleLocateGCj);
@@ -203,9 +221,9 @@ $(document).ready(function () {
 	});
 	
 	function callBack(coor){
-		var coorA = coor;
-		map.getView().setCenter(coorA);
-		var geo = new ol.geom.Point(coorA);
+		var coorG = coor;
+		map.getView().setCenter(coorG);
+		var geo = new ol.geom.Point(coorG);
 		var feature = new ol.Feature();
 		feature.setGeometry(geo);
 		feature.setStyle(style.styleLocate);
