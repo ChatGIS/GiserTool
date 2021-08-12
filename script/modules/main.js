@@ -164,7 +164,7 @@ $(document).ready(function () {
 		var coorG = "";	// GCJ坐标
 		var coorB = ""; // 百度坐标
 		var coorW = "";	// WGS84坐标
-		var coorType = "1";
+		var coorType = "2";
 		var result = "";
 		var coor = $("#location-coordinate").val();
 		if(coor.trim() == ""){
@@ -172,12 +172,12 @@ $(document).ready(function () {
 			return;
 		}
 		coorType = $('.map-location input:radio:checked').val();
-		if(coorType == 1){
+		if(coorType == 2){
 			var coorArr = coor.split(",");
 			coorG = coorArr;
-			var coorResult = coorf.transLonlat(coorArr, 1, 3);
+			var coorResult = coorf.transLonlat(coorArr, 2, 3);
 			coorB = coorResult.coor;
-		} else if(coorType == 2){
+		} else if(coorType == 1){
 			
 		} else if(coorType == 3){
 			

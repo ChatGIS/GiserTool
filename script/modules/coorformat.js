@@ -77,9 +77,9 @@ var coorf = {
 		var obj = {};
 		if(fcs == tcs ){   //相同坐标不转为
 			obj.coor = coor;
-		}else if(fcs == 1 && tcs == 3){  // GCJ02转为BD09
+		}else if(fcs == 2 && tcs == 3){  // GCJ02转为BD09
 			obj.coor = coorf.transGcjToBd(coor);
-		}else if(fcs == 3 && tcs == 1){  // BD09转为GCJ02
+		}else if(fcs == 3 && tcs == 2){  // BD09转为GCJ02
 			obj.coor = coorf.transBdToGcj(coor);
 		}
 		/* else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
