@@ -80,7 +80,7 @@ var coorf = {
 		}else if(fcs == 1 && tcs == 3){  // GCJ02转为BD09
 			obj.coor = coorf.transGcjToBd(coor);
 		}else if(fcs == 3 && tcs == 1){  // BD09转为GCJ02
-			obj.coor = gcsp.util.corToArr(arr,true);
+			obj.coor = coorf.transBdToGcj(coor);
 		}
 		/* else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
 			obj.arr = gcsp.util.corToArr(arr,true);
@@ -122,16 +122,32 @@ var coorf = {
 		return obj;
 	},
 	
-	transGcjToBd: function (arr) {  // 火星坐标转为百度
+	// 火星坐标转为百度
+	transGcjToBd: function (arr) {
 		var returnArr = [];
 		var length = arr.length;
 		for (var i = 0; i < length; i = i + 2) {
-		   if(i+2>length)continue;
+		   if(i+2>length) continue;
 		   var lon = parseFloat(arr[i]);
 		   var lat = parseFloat(arr[i+1]);
 		   var ll = coorf.bd_encrypt(lat, lon);
 		   returnArr.push(parseFloat(ll.lon));
 		   returnArr.push(parseFloat(ll.lat));
+		}
+		return returnArr;
+	},
+	
+	// 百度坐标转为火星坐标
+	transBdToGcj: function (arr) {  
+		var returnArr = [];
+		var length = arr.length;
+		for (var i = 0; i < length; i = i + 2) {
+			if(i+2>length) continue;
+			var lon = parseFloat(arr[i]);
+			var lat = parseFloat(arr[i+1]);
+			var ll = gcsp.util.bd_decrypt(lat, lon);
+			returnArr.push(parseFloat(ll.lon));
+			returnArr.push(parseFloat(ll.lat));
 		}
 		return returnArr;
 	},

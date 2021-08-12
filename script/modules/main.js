@@ -164,20 +164,24 @@ $(document).ready(function () {
 		var coorG = "";	// GCJ坐标
 		var coorB = ""; // 百度坐标
 		var coorW = "";	// WGS84坐标
+		var coorType = "1";
 		var result = "";
 		var coor = $("#location-coordinate").val();
 		if(coor.trim() == ""){
 			alert("定位坐标为空！");
 			return;
 		}
-		
-		if(1 == 1){
-			coorG = coor;
+		coorType = $('.map-location input:radio:checked').val();
+		if(coorType == 1){
+			var coorArr = coor.split(",");
+			coorG = coorArr;
+			var coorResult = coorf.transLonlat(coorArr, 1, 3);
+			coorB = coorResult.coor;
+		} else if(coorType == 2){
+			
+		} else if(coorType == 3){
+			
 		}
-		
-		var coor = coor.split(",");
-		var coorObj = coorf.transLonlat(coor, 1, 3);
-		coorB = coorObj.coor;
 		
 		// 转换结果输出框
 		result += "GCJ-02：" + coorG + "\r\n";
@@ -187,12 +191,19 @@ $(document).ready(function () {
 		$("#coor-trans-result").show();
 		
 		// 定位坐标显示
-		map.getView().setCenter(coorB);
+		// map.getView().setCenter(coorB);
 		var geoB = new ol.geom.Point(coorB);
 		var featureB = new ol.Feature();
 		featureB.setGeometry(geoB);
 		featureB.setStyle(style.styleLocateBD);
 		layerVectorLocate.getSource().addFeature(featureB);
+		
+		map.getView().setCenter(coorG);
+		var geoG = new ol.geom.Point(coorG);
+		var feature = new ol.Feature();
+		feature.setGeometry(geoG);
+		feature.setStyle(style.styleLocateGCj);
+		layerVectorLocate.getSource().addFeature(feature);
 		// 调用百度API
 		// $.ajax({
 		// 	url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,
@@ -211,13 +222,6 @@ $(document).ready(function () {
 		// 		layerVectorLocate.getSource().addFeature(feature);
 		// 	},
 		// });
-		var coorG = coor;
-		map.getView().setCenter(coorG);
-		var geo = new ol.geom.Point(coorG);
-		var feature = new ol.Feature();
-		feature.setGeometry(geo);
-		feature.setStyle(style.styleLocateGCj);
-		layerVectorLocate.getSource().addFeature(feature);
 	});
 	
 	function callBack(coor){
