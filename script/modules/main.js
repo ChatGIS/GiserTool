@@ -167,16 +167,18 @@ $(document).ready(function () {
 		var coorType = "2";
 		var result = "";
 		var coor = $("#location-coordinate").val();
+		var coorArr = coor.split(",");
 		if(coor.trim() == ""){
 			alert("定位坐标为空！");
 			return;
 		}
 		coorType = $('.map-location input:radio:checked').val();
-		if(coorType == 2){
-			var coorArr = coor.split(",");
+		if(coorType == 2){			
 			coorG = coorArr;
-			var coorResult = coorf.transLonlat(coorArr, 2, 3);
-			coorB = coorResult.coor;
+			var coorResultB = coorf.transLonlat(coorArr, 2, 3);
+			coorB = coorResultB.coor;
+			var coorResultW = coorf.transLonlat(coorArr, 2, 1);
+			coorW = coorResultW.coor;
 		} else if(coorType == 1){
 			
 		} else if(coorType == 3){
@@ -191,19 +193,25 @@ $(document).ready(function () {
 		$("#coor-trans-result").show();
 		
 		// 定位坐标显示
-		// map.getView().setCenter(coorB);
+		var geoW = new ol.geom.Point(coorW);
+		var featureW = new ol.Feature();
+		featureW.setGeometry(geoW);
+		featureW.setStyle(style.styleLocateWGS);
+		layerVectorLocate.getSource().addFeature(featureW);
+		
+		var geoG = new ol.geom.Point(coorG);
+		var featureG = new ol.Feature();
+		featureG.setGeometry(geoG);
+		featureG.setStyle(style.styleLocateGCj);
+		layerVectorLocate.getSource().addFeature(featureG);
+		
 		var geoB = new ol.geom.Point(coorB);
 		var featureB = new ol.Feature();
 		featureB.setGeometry(geoB);
 		featureB.setStyle(style.styleLocateBD);
 		layerVectorLocate.getSource().addFeature(featureB);
 		
-		map.getView().setCenter(coorG);
-		var geoG = new ol.geom.Point(coorG);
-		var feature = new ol.Feature();
-		feature.setGeometry(geoG);
-		feature.setStyle(style.styleLocateGCj);
-		layerVectorLocate.getSource().addFeature(feature);
+		map.getView().setCenter(coorArr);
 		// 调用百度API
 		// $.ajax({
 		// 	url: "https://api.map.baidu.com/geoconv/v1/?coords="+ coor[0] +","+ coor[1] +"&from=3&to=5&ak=" + mapkey.bdKey,

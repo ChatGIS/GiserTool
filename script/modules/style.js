@@ -99,6 +99,21 @@ var style = {
 		})
 	}),
 	
+	// 定位样式:WGS84
+	styleLocateWGS : new ol.style.Style({
+		image: new ol.style.Icon({
+			src:'resource/image/locate1.png',
+			size:[64,64],
+			offset:[-16, -5]
+		}),
+		text: new ol.style.Text({
+			text:"WGS84",
+			font:"15px sans-serif",
+			offsetX:-3,
+			offsetY:-10
+		})
+	}),
+	
 	// 定位样式:GCj
 	styleLocateGCj : new ol.style.Style({
 		image: new ol.style.Icon({
