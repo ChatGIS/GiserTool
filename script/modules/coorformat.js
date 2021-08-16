@@ -82,7 +82,7 @@ var coorf = {
 		}else if(fcs == 3 && tcs == 2){  // BD09转为GCJ02
 			obj.coor = coorf.transBdToGcj(coor);
 		}else if(fcs == 1 && tcs == 2){  // 标准坐标4326转为火星坐标4326
-			obj.coor = coorf.corToArr(coor);
+			obj.coor = coorf.transWgsToGcj(coor);
 		}else if(fcs == 2 && tcs == 1){  //火星坐标转4326为标准坐标4326
 			obj.coor = coorf.transGcjToWgs(coor);
 		}/* else if(fcs == 1 && tcs == 3){  //标准坐标4326转为900913，中间要用火星坐标
@@ -119,6 +119,21 @@ var coorf = {
 			obj.arr = gcsp.util.transLonlatArr(obj.arr, 2, 3).arr;
 		} */
 		return obj;
+	},
+	
+	// 火星坐标转为WGS84标准坐标
+	transWgsToGcj: function (arr) {
+		var returnArr = [];
+		var length = arr.length;
+		for (var i = 0; i < length; i = i + 2) {
+			if(i+2>length)continue;
+			var lon = parseFloat(arr[i]);
+			var lat = parseFloat(arr[i+1]);
+			var ll = coorf.gcj_encrypt(lat, lon);
+			returnArr.push(parseFloat(ll.lon));
+			returnArr.push(parseFloat(ll.lat));		
+		}
+		return returnArr;
 	},
 	
 	// 火星坐标转为WGS84标准坐标

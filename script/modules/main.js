@@ -180,9 +180,17 @@ $(document).ready(function () {
 			var coorResultW = coorf.transLonlat(coorArr, 2, 1);
 			coorW = coorResultW.coor;
 		} else if(coorType == 1){
-			
+			coorW = coorArr;
+			var coorResultG = coorf.transLonlat(coorArr, 1, 2);
+			coorG = coorResultG.coor;
+			var coorResultB = coorf.transLonlat(coorG, 2, 3);
+			coorB = coorResultB.coor;
 		} else if(coorType == 3){
-			
+			coorB = coorArr;
+			var coorResultG = coorf.transLonlat(coorArr, 3, 2);
+			coorG = coorResultG.coor;
+			var coorResultW = coorf.transLonlat(coorG, 2, 1);
+			coorW = coorResultW.coor;
 		}
 		
 		// 转换结果输出框
