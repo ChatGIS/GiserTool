@@ -28,6 +28,12 @@ $(document).ready(function () {
 		})
 	});
 	
+	var layerGridGeoServer = new ol.layer.Tile({
+		source: new ol.source.TileWMS({
+			url:"http://localhost:8080/geoserver/sxdx/wms?service=WMS&version=1.1.0&request=GetMap&layers=sxdx%3Asxdx_grid&width=533&height=768&srs=EPSG%3A4326"
+		})
+	});
+	
 	/* 预定义图层 */		
 	var layerVector1 = new ol.layer.Vector({
 	  source: new ol.source.Vector(),
@@ -57,7 +63,7 @@ $(document).ready(function () {
 	  source: new ol.source.Vector()
 	});
 	
-	var layers = [gaodeTileLayer, layerArcGISTile,
+	var layers = [gaodeTileLayer, layerArcGISTile, layerGridGeoServer,
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
 		layermMeasure, layerVectorLocate, layerGeoJsonChina];
 	
@@ -345,4 +351,25 @@ $(document).ready(function () {
 		$("#tool-mesure-polygon").click(addMeasureInteraction("area"));
 	
 	}
+	
+	$("#request-get").click(function(){
+		var name = "100274";
+		var data = {
+			"service": "wfs",
+			"version": "1.1.0",
+			"request": "GetFeature",
+			"typeName": "sxdx:sxdx_grid",//图层
+			"outputFormat": "application/json",
+			"crs":4326,
+			"cql_filter": "INTERSECTS(geometry,SRID=4326;POINT(113.28 38.09))"
+		};
+		$.ajax({
+		  url: "http://localhost:8080/geoserver/wfs",
+		  data: data,
+		  success: function(response){
+			  console.log(response);
+			  alert(response.features[0].properties.center_lonlat);
+		  }
+		});
+	})
 })
