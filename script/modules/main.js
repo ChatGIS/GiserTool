@@ -67,14 +67,21 @@ $(document).ready(function () {
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
 		layermMeasure, layerVectorLocate, layerGeoJsonChina];
 	
+	// 自定义投影
+	// var proj = new ol.proj.Projection({
+	// 	code:'EPSG:4326',
+	// 	units: "m",
+	// 	extent: [110.21458500009771, 34.58559499960961, 114.55652199999042, 40.74176700034684]
+	// });
+	
 	/* 地图初始化 */
 	map = new ol.Map({
 		layers:layers,
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 16,
-			projection: 'EPSG:4326'
+			zoom: 1,
+			projection: 'EPSG:4326'	// proj
 		}),
 		target: 'map-div'
 	});
@@ -84,6 +91,7 @@ $(document).ready(function () {
 		Units: 'metric',//单位有5种：degrees imperial us nautical metric
 	});
 	map.addControl(scaleLineControl);
+	map.addControl(new ol.control.ZoomSlider());
 	
 	var feature1 = new ol.Feature({
 		geometry: new ol.geom.Point(coorCenter)
@@ -270,6 +278,38 @@ $(document).ready(function () {
 		});
 	});
 	
+	// 图层管理
+	function bindInputs(layerid, layer) {
+	  const visibilityInput = $(layerid + ' input.visible');
+	  visibilityInput.on('change', function () {
+	    layer.setVisible(this.checked);
+	  });
+	  visibilityInput.prop('checked', layer.getVisible());
+	
+	  const opacityInput = $(layerid + ' input.opacity');
+	  opacityInput.on('input', function () {
+	    layer.setOpacity(parseFloat(this.value));
+	  });
+	  opacityInput.val(String(layer.getOpacity()));
+	}
+	function setup(id, group) {
+	  group.getLayers().forEach(function (layer, i) {
+	    const layerid = id + i;
+	    bindInputs(layerid, layer);
+	    if (layer instanceof LayerGroup) {
+	      setup(layerid, layer);
+	    }
+	  });
+	}
+	setup('#layer', map.getLayerGroup());
+	
+	$('#layertree li > span')
+	  .click(function () {
+	    $(this).siblings('fieldset').toggle();
+	  })
+	  .siblings('fieldset')
+	  .hide();
+	  
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
 	clipboard.on('success', function(e) {
