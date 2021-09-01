@@ -63,7 +63,7 @@ $(document).ready(function () {
 	  source: new ol.source.Vector()
 	});
 	
-	var layers = [gaodeTileLayer, layerArcGISTile, layerGridGeoServer,
+	var layers = [gaodeTileLayer, osmTileLayer, layerArcGISTile, layerGridGeoServer,
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
 		layermMeasure, layerVectorLocate, layerGeoJsonChina];
 	
@@ -80,7 +80,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 1,
+			zoom: 16,
 			projection: 'EPSG:4326'	// proj
 		}),
 		target: 'map-div'
@@ -292,7 +292,7 @@ $(document).ready(function () {
 	  });
 	  opacityInput.val(String(layer.getOpacity()));
 	}
-	function setup(id, group) {
+	/* function setup(id, group) {
 	  group.getLayers().forEach(function (layer, i) {
 	    const layerid = id + i;
 	    bindInputs(layerid, layer);
@@ -301,15 +301,21 @@ $(document).ready(function () {
 	    }
 	  });
 	}
-	setup('#layer', map.getLayerGroup());
+	setup('#layer', map.getLayerGroup()); */
+	bindInputs("#layer0", gaodeTileLayer);
+	bindInputs("#layer1", osmTileLayer);
 	
 	$('#layertree li > span')
 	  .click(function () {
 	    $(this).siblings('fieldset').toggle();
 	  })
 	  .siblings('fieldset')
-	  .hide();
-	  
+	  .show();
+	 
+	$("#layermanagebtn").click(function(){
+		$("#layertree").animate({width: 350, height:300}, 800);
+		$("#layertree").show();
+	})
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
 	clipboard.on('success', function(e) {

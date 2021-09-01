@@ -101,54 +101,32 @@
 				</div>
 			</div>
 		</div>
-		<div id="layertree">
-		      <h5>Click on layer nodes below to change their properties.</h5>
+		<button id="layermanagebtn">图层管理</button>
+		<div id="layertree" class="layermanage" style="display: none;">
+		      <h5>图层管理</h5>
 		      <ul>
-		        <li><span>OSM layer</span>
-		          <fieldset id="layer0">
-		            <label class="checkbox" for="visible0">
-		              visibile <input id="visible0" class="visible" type="checkbox"/>
-		            </label>
-		            <label>
-		              opacity <input class="opacity" type="range" min="0" max="1" step="0.01"/>
-		            </label>
-		          </fieldset>
-		        </li>
 		        <li>
-		          <span>Layer group</span>
-		          <fieldset id="layer1">
-		            <label class="checkbox" for="visible1">
-		              visibile <input id="visible1" class="visible" type="checkbox"/>
-		            </label>
-		            <label>
-		              opacity <input class="opacity" type="range" min="0" max="1" step="0.01"/>
-		            </label>
-		          </fieldset>
-		          <ul>
-		            <li>
-		              <span>Food insecurity layer</span>
-		              <fieldset id="layer10">
-		                <label class="checkbox" for="visible10">
-		                  visibile <input id="visible10" class="visible" type="checkbox"/>
-		                </label>
-		                <label>
-		                  opacity <input class="opacity" type="range" min="0" max="1" step="0.01"/>
-		                </label>
-		              </fieldset>
-		            </li>
-		            <li>
-		              <span>World borders layer</span>
-		              <fieldset id="layer11">
-		                <label class="checkbox" for="visible11">
-		                  visibile <input id="visible11" class="visible" type="checkbox"/>
-		                </label>
-		                <label>
-		                  opacity <input class="opacity" type="range" min="0" max="1" step="0.01"/>
-		                </label>
-		              </fieldset>
-		            </li>
-		          </ul>
+				  <span>高德底图</span>
+				  <fieldset id="layer0">
+					<label class="checkbox" for="visible0">
+					  显示 <input id="visible0" class="visible" type="checkbox"/>
+					</label>
+					<label>
+					  透明度 <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+					</label>
+				  </fieldset>
 		        </li>
+				<li>
+				  <span>OpenStreetMap</span>
+				  <fieldset id="layer1">
+					<label class="checkbox" for="visible1">
+					  显示 <input id="visible1" class="visible" type="checkbox"/>
+					</label>
+					<label>
+					  透明度 <input class="opacity" type="range" min="0" max="1" step="0.01"/>
+					</label>
+				  </fieldset>
+				</li>
 		      </ul>
 		    </div>
 	</body>

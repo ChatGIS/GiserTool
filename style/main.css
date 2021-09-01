@@ -111,11 +111,23 @@ html,body {
 }
 
 .active {
-	color: #009cf9
+	color: #dcfffe
+}
+
+/* 图层管理 */
+.layermanage {
+	padding: 12px;
+	position: absolute;
+	top: 300px;
+	left: 10px;
+	height: 276px;
+	background-color: #ceeaf8ad;
 }
 /* 
 	弹框样式:结束
 */
+
+
 
 /* 提示框样式-开始 */
 .ol-tooltip {
