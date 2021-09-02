@@ -312,9 +312,9 @@ $(document).ready(function () {
 	  .siblings('fieldset')
 	  .show();
 	 
-	$("#layermanagebtn").click(function(){
+	$("#tool-layer-manage").click(function(){
 		$("#layertree").animate({width: 350, height:300}, 800);
-		$("#layertree").show();
+		$("#layertree").toggle();
 	})
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
