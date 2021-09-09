@@ -34,6 +34,11 @@ $(document).ready(function () {
 		})
 	});
 	
+	// 绘制要素图层
+	var layerDrawFeatures = new ol.layer.Vector({
+		source: new ol.source.Vector()
+	});
+	
 	/* 预定义图层 */		
 	var layerVector1 = new ol.layer.Vector({
 	  source: new ol.source.Vector(),
@@ -64,6 +69,7 @@ $(document).ready(function () {
 	});
 	
 	var layers = [gaodeTileLayer, osmTileLayer, layerArcGISTile, layerGridGeoServer,
+		layerDrawFeatures,
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
 		layermMeasure, layerVectorLocate, layerGeoJsonChina];
 	
@@ -316,6 +322,34 @@ $(document).ready(function () {
 		$("#layertree").animate({width: 350, height:300}, 800);
 		$("#layertree").toggle();
 	})
+	
+	// 绘制要素点击
+	var drawInteraction;
+	function drawTypeChange() {
+		drawInteraction = new ol.interaction.Draw({
+			source: layerDrawFeatures.getSource(),
+			type: $("#draw-feature-type").val(),
+		});	
+		
+	}
+	
+	$("#tool-draw-feature").click(function(){
+		$("#box-draw-feature").animate({width: 350, height:300}, 800);
+		$("#box-draw-feature").toggle();
+		if($("#box-draw-feature").css("display") == "none"){
+			map.removeInteraction(drawInteraction);
+		} else{
+			drawTypeChange();
+			map.addInteraction(drawInteraction);
+		}
+	})
+	
+	$("#draw-feature-type").change(function(){
+		map.removeInteraction(drawInteraction);
+		drawTypeChange();
+		map.addInteraction(drawInteraction);
+	})
+	
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
 	clipboard.on('success', function(e) {
@@ -335,8 +369,6 @@ $(document).ready(function () {
 		control.addMeasureInteraction("area");
 	});
 	
-	
-	//testJsts();
 	function getPolygonCoordinateFromStr(lonlats){
 		var array3 = [];
 		if (!lonlats || lonlats == "") {
@@ -390,24 +422,24 @@ $(document).ready(function () {
 		feature5.setGeometry(geoBuf);
 		feature5.setStyle(style.stylePolygonRed);
 		layerVector5.getSource().addFeature(feature5); */
-		
-		
-		
-		$("#tool-mesure-line").click(addMeasureInteraction("line"));
-		$("#tool-mesure-polygon").click(addMeasureInteraction("area"));
-	
 	}
+	testJsts();
+	
 	
 	$("#request-get").click(function(){
 		var name = "100274";
 		var data = {
 			"service": "wfs",
-			"version": "1.1.0",
+			"version": "2.0.0",
 			"request": "GetFeature",
 			"typeName": "sxdx:sxdx_grid",//图层
 			"outputFormat": "application/json",
-			"crs":4326,
-			"cql_filter": "INTERSECTS(geometry,SRID=4326;POINT(113.28 38.09))"
+			"crs":"EPSG:4326",
+			// "cql_filter": "INTERSECTS(geometry,SRID=4326;POINT(113.28 38.09))"
+			// "cql_filter": "INTERSECTS(geometry,POINT(113.28 38.09))"
+			"cql_filter": 'INTERSECTS(geometry, SRID=4326;POLYGON((112.25796325683595 38.00728546142579,112.28611572265626 37.93999420166016,112.31838806152345 38.02376495361329,112.26688964843751 38.042304382324225,112.26997955322267 38.0189584350586,112.28920562744142 38.01689849853516,112.25796325683595 38.00728546142579)))'
+			// "cql_filter": 'INTERSECTS(geometry, POLYGON((112.25796325683595 38.00728546142579,112.28611572265626 37.93999420166016,112.31838806152345 38.02376495361329,112.26688964843751 38.042304382324225,112.26997955322267 38.0189584350586,112.28920562744142 38.01689849853516,112.25796325683595 38.00728546142579)))'
+			// "bbox":  [112.55492345953222, 36.98169442084354, 112.55511575146055, 37.98184592248583]
 		};
 		$.ajax({
 		  url: "http://localhost:8080/geoserver/wfs",
@@ -415,6 +447,9 @@ $(document).ready(function () {
 		  success: function(response){
 			  console.log(response);
 			  alert(response.features[0].properties.center_lonlat);
+		  },
+		  error: function(event, XMLHttpRequest, ajaxOptions, thrownError){
+			  debugger
 		  }
 		});
 	})
