@@ -323,7 +323,8 @@ $(document).ready(function () {
 		$("#layertree").toggle();
 	})
 	
-	// 绘制要素点击
+	/* 绘制要素
+	 */
 	var drawInteraction;
 	function drawTypeChange() {
 		drawInteraction = new ol.interaction.Draw({
@@ -349,6 +350,10 @@ $(document).ready(function () {
 		drawTypeChange();
 		map.addInteraction(drawInteraction);
 	})
+	
+	$('#draw-back').on('click', function () {
+		drawInteraction.removeLastPoint();
+	});
 	
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
