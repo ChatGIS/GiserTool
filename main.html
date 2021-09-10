@@ -54,6 +54,9 @@
 			<a id="tool-draw-feature" class="toolbox-item-left">
 				<img src="resource/image/draw-feature.png" alt="绘制要素" title="绘制要素"/>
 			</a>
+			<a id="tool-heatmap" class="toolbox-item-left">
+				<img src="resource/image/heatmap.png" alt="热力图" title="热力图"/>
+			</a>
 		</div>
 		<div id="map-info " class="map-info">
 			<span>缩放级别：</span><label id="zoom-level">5</label>
@@ -148,6 +151,18 @@
 				  <option value="Circle">圆</option>
 				</select>
 				<input class="form-control mr-2 mb-2 mt-2" type="button" value="回退" id="draw-back">
+			  </form>
+			</div>
+			<div id="box-heatmap" class="heatmap" style="display: none;">
+			  <h5>热力图控制</h5>
+			  <form class="form-inline">
+				<label for="radius-heatmap">半径</label>
+				<input id="radius-heatmap" type="range" min="1" max="15" step="1" value="8" onchange="document.getElementById('show-radius-heatmap').innerHTML=value">
+				<span id="show-radius-heatmap"></span>
+				<br>
+				<label for="blur-heatmap">模糊</label>
+				<input id="blur-heatmap" type="range" min="1" max="50" step="1" value="15" onchange="document.getElementById('show-blur-heatmap').innerHTML=value">
+				<span id="show-blur-heatmap"></span>
 			  </form>
 			</div>
 	</body>

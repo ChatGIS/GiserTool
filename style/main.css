@@ -135,6 +135,16 @@ html,body {
 	height: 276px;
 	background-color: #ceeaf8ad;
 }
+
+/* 热力图 */
+.heatmap {
+	padding: 12px;
+	position: absolute;
+	top: 420px;
+	left: 10px;
+	height: 276px;
+	background-color: #ceeaf8ad;
+}
 /* 
 	弹框样式:结束
 */

@@ -1,5 +1,7 @@
 $(document).ready(function () {
 	var coorCenter = [117.1257,36.6809];
+	const blur = document.getElementById('blur-heatmap');
+	const radius = document.getElementById('radius-heatmap');
 	
 	// 高德底图
 	var gaodeTileLayer = new ol.layer.Tile({
@@ -23,11 +25,32 @@ $(document).ready(function () {
 	// 加载GeoJSON数据
 	var layerGeoJsonChina = new ol.layer.Vector({
 		source: new ol.source.Vector({
-			url:"resource/geodata/ChinaRegion1.geojson",
+			url:"resource/geodata/China.geojson",
 			format: new ol.format.GeoJSON()
 		})
 	});
 	
+	// 热力图层
+	var layerHeatMap = new ol.layer.Heatmap({
+		source: new ol.source.Vector({
+			url: "resource/geodata/2012_Earthquakes_Mag5.kml",
+			format: new ol.format.KML({
+				extractStyles: false,
+			}),
+		}),
+		radius: 8,
+		blur: 15,
+		weight: function (feature) {
+			// 2012_Earthquakes_Mag5.kml stores the magnitude of each earthquake in a
+			// standards-violating <magnitude> tag in each Placemark.  We extract it from
+			// the Placemark's name instead.
+			var name = feature.get('name');
+			var magnitude = parseFloat(name.substr(2));
+			return magnitude - 5;
+		},
+	});
+	
+	// wms
 	var layerGridGeoServer = new ol.layer.Tile({
 		source: new ol.source.TileWMS({
 			url:"http://localhost:8080/geoserver/sxdx/wms?service=WMS&version=1.1.0&request=GetMap&layers=sxdx%3Asxdx_grid&width=533&height=768&srs=EPSG%3A4326"
@@ -69,9 +92,9 @@ $(document).ready(function () {
 	});
 	
 	var layers = [gaodeTileLayer, osmTileLayer, layerArcGISTile, layerGridGeoServer,
-		layerDrawFeatures,
+		layerDrawFeatures, 
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
-		layermMeasure, layerVectorLocate, layerGeoJsonChina];
+		layermMeasure, layerVectorLocate, layerGeoJsonChina,layerHeatMap,];
 	
 	// 自定义投影
 	// var proj = new ol.proj.Projection({
@@ -86,7 +109,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 16,
+			zoom: 2,
 			projection: 'EPSG:4326'	// proj
 		}),
 		target: 'map-div'
@@ -355,6 +378,39 @@ $(document).ready(function () {
 		drawInteraction.removeLastPoint();
 	});
 	
+	/* 热力图 */
+	$("#tool-heatmap").click(function(){
+		$("#box-heatmap").animate({width: 200, height:100}, 100);
+		$("#box-heatmap").toggle();
+		/* if($("#box-draw-feature").css("display") == "none"){
+			map.removeInteraction(drawInteraction);
+		} else{
+			drawTypeChange();
+			map.addInteraction(drawInteraction);
+		} */
+	})
+	
+	
+	
+	// $("#radius-heatmap").change(function(){
+	// 	debugger
+	// 	var radiusVal = $("#radius-heatmap").val();
+	// 	var blurVal = $("#blur-heatmap").val();
+	// 	layerHeatMap.setRadius(radiusVal);
+	// 	layerHeatMap.setBlur(blurVal);
+	// });
+	
+	const blurHandler = function () {
+	  layerHeatMap.setBlur(parseInt(blur.value, 10));
+	};
+	blur.addEventListener('input', blurHandler);
+	blur.addEventListener('change', blurHandler);
+	
+	const radiusHandler = function () {
+	  layerHeatMap.setRadius(parseInt(radius.value, 10));
+	};
+	radius.addEventListener('input', radiusHandler);
+	radius.addEventListener('change', radiusHandler);
 	// 复制功能
 	var clipboard = new ClipboardJS('#clone');
 	clipboard.on('success', function(e) {
