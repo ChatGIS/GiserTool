@@ -94,7 +94,8 @@ $(document).ready(function () {
 	var layers = [gaodeTileLayer, osmTileLayer, layerArcGISTile, layerGridGeoServer,
 		layerDrawFeatures, 
 		layerVector1, layerVector2, layerVector3, layerVector4, layerVector5, 
-		layermMeasure, layerVectorLocate, layerGeoJsonChina,layerHeatMap,];
+		layermMeasure, layerVectorLocate, layerGeoJsonChina,layerHeatMap];
+	// var layers = [layerHeatMap];
 	
 	// 自定义投影
 	// var proj = new ol.proj.Projection({
@@ -109,7 +110,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 2,
+			zoom: 16,
 			projection: 'EPSG:4326'	// proj
 		}),
 		target: 'map-div'
@@ -127,7 +128,15 @@ $(document).ready(function () {
 	});
 	 
 	layerVector1.getSource().addFeature(feature1);
+	var feature2 = new ol.Feature({
+		geometry: new ol.geom.Polygon([[[112.2161005605, 38.3080000095], [112.2161005605, 37.9748000095], [112.7986000064, 37.9748000095], [112.7986000064, 38.3080000095], [112.2161005605, 38.3080000095]]])
+	})
+	layerVector1.getSource().addFeature(feature2);
 	
+	var feature3 = new ol.Feature({
+		geometry: new ol.geom.Polygon([[[112.23379987630994, 38.08959709167481], [112.23379987630994, 38.0874513244629], [112.7986000064, 38.0874513244629], [112.7986000064, 38.08959709167481], [112.23379987630994, 38.08959709167481]]])
+	})
+	layerVector1.getSource().addFeature(feature3);
 	//style.flashPointStyle(feature);
 	
 	//locate.getCurrentPosition();
@@ -494,13 +503,17 @@ $(document).ready(function () {
 			"version": "2.0.0",
 			"request": "GetFeature",
 			"typeName": "sxdx:sxdx_grid",//图层
+			// "typeName": "tiger:poi",
 			"outputFormat": "application/json",
 			"crs":"EPSG:4326",
 			// "cql_filter": "INTERSECTS(geometry,SRID=4326;POINT(113.28 38.09))"
 			// "cql_filter": "INTERSECTS(geometry,POINT(113.28 38.09))"
-			"cql_filter": 'INTERSECTS(geometry, SRID=4326;POLYGON((112.25796325683595 38.00728546142579,112.28611572265626 37.93999420166016,112.31838806152345 38.02376495361329,112.26688964843751 38.042304382324225,112.26997955322267 38.0189584350586,112.28920562744142 38.01689849853516,112.25796325683595 38.00728546142579)))'
+			// "cql_filter": 'INTERSECTS(geometry, SRID=4326;POLYGON((112.25796325683595 38.00728546142579,112.28611572265626 37.93999420166016,112.31838806152345 38.02376495361329,112.26688964843751 38.042304382324225,112.26997955322267 38.0189584350586,112.28920562744142 38.01689849853516,112.25796325683595 38.00728546142579)))'
 			// "cql_filter": 'INTERSECTS(geometry, POLYGON((112.25796325683595 38.00728546142579,112.28611572265626 37.93999420166016,112.31838806152345 38.02376495361329,112.26688964843751 38.042304382324225,112.26997955322267 38.0189584350586,112.28920562744142 38.01689849853516,112.25796325683595 38.00728546142579)))'
 			// "bbox":  [112.55492345953222, 36.98169442084354, 112.55511575146055, 37.98184592248583]
+			// filter: ol.format.filter.like("NAME", "lo*"),
+			"propertyName":"propertyName"
+			
 		};
 		$.ajax({
 		  url: "http://localhost:8080/geoserver/wfs",
