@@ -189,6 +189,7 @@ $(document).ready(function () {
 		var feature3 = new ol.Feature({
 			geometry: new ol.geom.Polygon([lonlatTwoToFour(blockArr[i][0], blockArr[i][1], blockArr[i][2], blockArr[i][3])])
 		})
+		feature3.setId("1");
 		layerVector1.getSource().addFeature(feature3);
 	}
 
