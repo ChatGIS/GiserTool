@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	var coorCenter = [117.1257,36.6809];
+	var coorCenter = [112.46745089760276, 37.8841464904847];
 	const blur = document.getElementById('blur-heatmap');
 	const radius = document.getElementById('radius-heatmap');
 	
@@ -110,7 +110,7 @@ $(document).ready(function () {
 		view: new ol.View({
 			center: coorCenter,
 			//maxZoom: 19,
-			zoom: 16,
+			zoom: 13,
 			projection: 'EPSG:4326'	// proj
 		}),
 		target: 'map-div'
@@ -123,24 +123,75 @@ $(document).ready(function () {
 	map.addControl(scaleLineControl);
 	map.addControl(new ol.control.ZoomSlider());
 	
-	var feature1 = new ol.Feature({
-		geometry: new ol.geom.Point(coorCenter)
-	});
+	// var feature1 = new ol.Feature({
+	// 	geometry: new ol.geom.Point(coorCenter)
+	// });
 	 
-	layerVector1.getSource().addFeature(feature1);
-	var feature2 = new ol.Feature({
-		geometry: new ol.geom.Polygon([[[112.2161005605, 38.3080000095], [112.2161005605, 37.9748000095], [112.7986000064, 37.9748000095], [112.7986000064, 38.3080000095], [112.2161005605, 38.3080000095]]])
-	})
-	layerVector1.getSource().addFeature(feature2);
+	// layerVector1.getSource().addFeature(feature1);
+	// var feature2 = new ol.Feature({
+	// 	geometry: new ol.geom.Polygon([[[112.45935658536189, 37.879699774401146], [112.5006014881659, 37.89965629247663]]])
+	// })
+	// layerVector1.getSource().addFeature(feature2);
 	
-	var feature3 = new ol.Feature({
-		geometry: new ol.geom.Polygon([[[112.23379987630994, 38.08959709167481], [112.23379987630994, 38.0874513244629], [112.7986000064, 38.0874513244629], [112.7986000064, 38.08959709167481], [112.23379987630994, 38.08959709167481]]])
-	})
-	layerVector1.getSource().addFeature(feature3);
+	// var feature3 = new ol.Feature({
+	// 	geometry: new ol.geom.Polygon([[[112.23379987630994, 38.08959709167481], [112.23379987630994, 38.0874513244629], [112.7986000064, 38.0874513244629], [112.7986000064, 38.08959709167481], [112.23379987630994, 38.08959709167481]]])
+	// })
+	// layerVector1.getSource().addFeature(feature3);
 	//style.flashPointStyle(feature);
 	
 	//locate.getCurrentPosition();
+
+	// 分块算法呈现测试
+	var xyNum = [3, 2]
+	var extent = [112.46745089760276, 37.8841464904847, 112.53344274208916, 37.91482238694518];
+	var minLon = extent[0];
+	var minLat = extent[1];
+	var maxLon = extent[2];
+	var maxLat = extent[3];
+	var promiseAll = [];
+
+	var blockArr = [];  // 分块后的数组
+	var xNum = xyNum[0], yNum = xyNum[1];  // 横向分块个数，纵向分块个数
+	var newMinLon = minLon, newMinLat = minLat;  // 下一个新分块的基点(左下角)经纬度
+	var newMaxLon, newMaxLat; // 下一个新分块的顶点(右上角)经纬度
+	var aLon = (maxLon - minLon)/xNum;  // 单个分块的经度度数
+	var aLat = (maxLat - minLat)/yNum;  // 单个分块的纬度度数
+	// 从左向右，从下向上遍历
+	for(var i = 1; i <= yNum; i++){
+		var newMaxLat = minLat + aLat * i;  // 下一个分块纬度值
+		newMinLat = minLat + aLat * (i - 1);
+		for(var j = 1; j <= xNum; j++){
+			newMaxLon = minLon + aLon * j;                   
+			var newBlock = [newMinLon, newMinLat, newMaxLon, newMaxLat];  // 新分块坐标                  
+			blockArr.push(newBlock)
+			// 下一个分块的基点经度等于上一个分块的顶点经度
+			// 如果循环到x轴最后一块，则新的最小经度等于浏览器视口的最小经度（从左向右循环一行后，再从左侧开始下一轮循环）
+			if(j == xNum){
+				newMinLon = minLon
+			} else {
+				newMinLon = newMaxLon;
+			}  
+		}
+	}
+
+	// 将对角坐标转换成Ol支持的4点坐标
+	function lonlatTwoToFour(minLon, minLat, maxLon, maxLat){
+		var lonlatFourArr = [];
+		lonlatFourArr.push([minLon, minLat]);
+		lonlatFourArr.push([minLon, maxLat]);
+		lonlatFourArr.push([maxLon, maxLat]);
+		lonlatFourArr.push([maxLon, minLat]);
+		return lonlatFourArr;
+	}
 	
+	// 循环呈现
+	for(var i = 0; i < blockArr.length; i++){
+		var feature3 = new ol.Feature({
+			geometry: new ol.geom.Polygon([lonlatTwoToFour(blockArr[i][0], blockArr[i][1], blockArr[i][2], blockArr[i][3])])
+		})
+		layerVector1.getSource().addFeature(feature3);
+	}
+
 	// 地图滑动
 	map.on("moveend",function(e){
 	    getZoomShow();
