@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聚集点场景</title>
+    <script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script src="script/plugins/OpenLayers/6.5.0/ol.js"></script>
+    <link rel="stylesheet" href="script/plugins/OpenLayers/6.5.0/ol.css"/>
+    <style>
+        .map {
+            width: 100%;
+            height:700px;
+        }
+    </style>
+</head>
+<body>
+    <button id="getViewPort" onclick="getAllFeatures()">222</button>
+    <div id="map" class="map"></div>
+</body>
+<script>
+    function showPointInMap(param) {
+        console.log(param)
+        let featureArr = [];
+        if (param.length !== 0) {
+            for (let i = 0; i < param.length; i++) {
+                let pointCoor = [param[i].geometry.x, param[i].geometry.y]
+                let feature = new ol.Feature({
+                    geometry: new ol.geom.Point(pointCoor)
+                })
+                featureArr.push(feature)
+            }
+        }
+        var source = new ol.source.Vector({
+            features: featureArr
+        });
+        const clusterSource = new ol.source.Cluster({
+            distance: 100,
+            minDistance: 10,
+            source: source,
+        });
+        const styleCache = {};
+        const clusters = new ol.layer.Vector({
+            source: clusterSource,
+            style: function (feature) {
+                const size = feature.get('features').length;
+                let style = styleCache[size];
+                if (!style) {
+                    style = new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: size > 1000 ? size/1000 * 10 : 10,
+                            stroke: new ol.style.Stroke({
+                                color: '#fff',
+                            }),
+                            fill: new ol.style.Fill({
+                                color: 'red',
+                            }),
+                        }),
+                        text: new ol.style.Text({
+                            text: size.toString(),
+                            fill: new ol.style.Fill({
+                                color: '#fff',
+                            }),
+                        }),
+                    });
+                    styleCache[size] = style;
+                }
+                return style;
+            },
+        });
+
+        map.addLayer(clusters);
+
+    }
+
+    function getAllFeatures() {
+        var projectCoordinate = map.getView().calculateExtent(map.getSize());
+        let leftTopLon = projectCoordinate[0]; //小经度
+        let leftTopLat = projectCoordinate[1]; //小纬度
+        let rightBottonLon = projectCoordinate[2]; //大经度
+        let rightBottonLat = projectCoordinate[3]; //大纬度
+
+        let geomery = `%7B%22xmin%22%3A${leftTopLon}%2C%22ymin%22%3A${leftTopLat}%2C%22xmax%22%3A${rightBottonLon}%2C%22ymax%22%3A${rightBottonLat}%2C%22spatialReference%22%EF%BC%9A%7B%22wkid%22%3A4326%2C%22lastestWkid%22%3A4326%7D%7D`
+        let url = "http://172.18.193.223:6080/arcgis/rest/services/government/government/MapServer/0/query?where=&text=&objectIds=&time=&geometry=" + geomery + "&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&distance=&units=esriSRUnit_Foot&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=4326&havingClause=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&historicMoment=&returnDistinctValues=false&resultOffset=&resultRecordCount=&returnExtentOnly=false&datumTransformation=&parameterValues=&rangeValues=&quantizationParameters=&featureEncoding=esriDefault&f=pjson"
+
+
+        $.get(url, function (data, status) {
+            // console.log("数据: " + JSON.parse(data).features[0].geometry.x + "\n状态: " + status);
+            // console.log(JSON.parse(data).features[0].geometry)
+            if (JSON.parse(data).features.length !== 0) {
+                showPointInMap(JSON.parse(data).features)
+            }
+
+        });
+
+    }
+
+    // 
+    
+    // 高德底图
+	var gaodeTileLayer = new ol.layer.Tile({
+		source: new ol.source.XYZ({
+			url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+		})
+	});
+
+    const map = new ol.Map({
+        layers: [gaodeTileLayer],
+        target: 'map',
+        view: new ol.View({
+            center: [112.52870595,37.87942920],
+            zoom: 12,
+            projection: 'EPSG:4326'	// proj
+        }),
+    });
+</script>
+</html>
