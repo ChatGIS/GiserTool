@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缓冲区内切分正方形网格</title>
+    <script src="../script/plugins/OpenLayers/6.5.0/ol.js"></script>
+    <link rel="stylesheet" href="../script/plugins/OpenLayers/6.5.0/ol.css">
+    <script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script src="../script/plugins/Turf/6.5.0/turf.min.js"></script>
+    <style>
+        .map {
+            width: 100%;
+            height:700px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script>
+        // 参数
+        let params = {
+            mapCenter: [109.70517868,38.28733057],
+            bufferRadius: 10,  // 缓冲区半径(km)
+            gridCellSide: 5,  // 切分网格宽度(km)
+        };
+        // geojson format
+        const formatGeoJSON = new ol.format.GeoJSON();
+        // 高德底图
+        var gaodeTileLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+            })
+        });
+        // 创建地图
+        let map = new ol.Map({
+            target: 'map',
+            layers: [gaodeTileLayer],
+            view: new ol.View({
+                center: params.mapCenter,
+                projection: 'EPSG:4326',
+                zoom: 10
+            })
+        });
+        // 线数据图层
+        let lineVectorSource = new ol.source.Vector({
+            url: '../resource/geodata/railway.geojson', // GeoJSON的文件路径，用户可以根据需求而改变
+            format: new ol.format.GeoJSON()
+        });
+        let lineVectorLayer = new ol.layer.Vector({
+            source: lineVectorSource
+        });
+        map.addLayer(lineVectorLayer);
+        // 缓冲区图层
+        let bufferVectorSouce = new ol.source.Vector();
+        let bufferVectorLayer = new ol.layer.Vector({
+            source: bufferVectorSouce
+        });
+        map.addLayer(bufferVectorLayer)
+        // 缓冲区边界图层
+        let bufferBBoxVectorSouce = new ol.source.Vector();
+        let bufferBBoxVectorLayer = new ol.layer.Vector({
+            source: bufferBBoxVectorSouce
+        });
+        map.addLayer(bufferBBoxVectorLayer)
+        // 切分网格图层
+        let gridVectorSource = new ol.source.Vector();
+        let gridVectorLayer = new ol.layer.Vector({
+            source: gridVectorSource,
+            opacity: 0.5,
+                style: feature => {
+                    let color = "red";
+                    const gid = feature.getProperties().gid;
+                    if(gid > 0){
+                        color = "#CCFFCC"
+                    } else {
+                        color = "#FFFFFF"
+                    }
+                    
+                    return new ol.style.Style({             
+                        fill: new ol.style.Fill({//填充样式
+                            // color: "#ff6688",
+                            color: color
+                        }),
+                        stroke: new ol.style.Stroke({//边界样式
+                            color: color,
+                            width: 0.5
+                        }),
+                        text: new ol.style.Text({
+                            // 字体与大小
+                            font: '8px Microsoft YaHei',
+                            //文字填充色
+                            fill: new ol.style.Fill({
+                                color: '#666'
+                            }),
+                            //文字边界宽度与颜色
+                            stroke: new ol.style.Stroke({
+                                color: '#fff',
+                                width: 3
+                            }),
+                            // 显示文本，数字需要转换为文本string类型！
+                            text: gid.toString(),
+                            offsetY: 15
+                        })
+                    })
+                },
+        });
+        map.addLayer(gridVectorLayer)
+        // 生成缓冲区
+        let bufferData = "";
+        $.ajaxSettings.async = false; // 同步执行
+        $.getJSON("../resource/geodata/railway.geojson", function(data) {
+            // 将各段线数据生成缓冲区
+            var bufferMultiData = turf.buffer(data, params.bufferRadius, {'units':'kilometers'});
+            // 将各缓冲区组合起来
+            bufferData = bufferMultiData.features[0];
+            for(let i = 0; i < bufferMultiData.features.length; i++){
+                bufferData = turf.union(bufferData, bufferMultiData.features[i])
+            }
+            // 转为ol要素
+            const bufferPolygon = formatGeoJSON.readFeatures(bufferData)
+            bufferVectorSouce.addFeatures(bufferPolygon)
+        });
+        $.ajaxSettings.async = true; // 异步执行
+
+        
+        // 生成边界框
+        const bufferBbox = turf.bbox(bufferData)
+        console.log(bufferBbox);
+        // 切分网格
+        let squareGrid = turf.squareGrid(bufferBbox, params.gridCellSide, {units: 'kilometers'});
+        // 判断切分网格和缓冲区面是否重叠
+        let gid = 0;
+        for(let i = 0; i < squareGrid.features.length; i++){
+            const isDisjoint = turf.booleanDisjoint(squareGrid.features[i], bufferData)
+            if(!isDisjoint){
+                gid = gid + 1
+                squareGrid.features[i].properties = {"gid": gid}
+            } else {
+                squareGrid.features[i].properties = {"gid": 0}
+            }
+        }
+        // 展示网格
+        const grids = formatGeoJSON.readFeatures(squareGrid)
+        console.log("网格数量：" + grids.length);
+        console.log("网格数量(缓冲区内)：" + gid);
+        console.log("网格数量(缓冲区内)：" + (grids.length - gid));
+        gridVectorSource.addFeatures(grids)
+    </script>
+</body>
+</html>
