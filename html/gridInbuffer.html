@@ -22,8 +22,8 @@
         // 参数
         let params = {
             mapCenter: [109.70517868,38.28733057],
-            bufferRadius: 10,  // 缓冲区半径(km)
-            gridCellSide: 5,  // 切分网格宽度(km)
+            bufferRadius: 5,  // 缓冲区半径(km)
+            gridCellSide: 1,  // 切分网格宽度(km)
         };
         // geojson format
         const formatGeoJSON = new ol.format.GeoJSON();
@@ -58,12 +58,12 @@
             source: bufferVectorSouce
         });
         map.addLayer(bufferVectorLayer)
-        // 缓冲区边界图层
-        let bufferBBoxVectorSouce = new ol.source.Vector();
-        let bufferBBoxVectorLayer = new ol.layer.Vector({
-            source: bufferBBoxVectorSouce
-        });
-        map.addLayer(bufferBBoxVectorLayer)
+        // // 缓冲区边界图层
+        // let bufferBBoxVectorSouce = new ol.source.Vector();
+        // let bufferBBoxVectorLayer = new ol.layer.Vector({
+        //     source: bufferBBoxVectorSouce
+        // });
+        // map.addLayer(bufferBBoxVectorLayer)
         // 切分网格图层
         let gridVectorSource = new ol.source.Vector();
         let gridVectorLayer = new ol.layer.Vector({
@@ -72,10 +72,24 @@
                 style: feature => {
                     let color = "red";
                     const gid = feature.getProperties().gid;
-                    if(gid > 0){
+                    /* if(gid > 0){
                         color = "#CCFFCC"
                     } else {
                         color = "#FFFFFF"
+                    } */
+                    gid1 = gid;
+                    if(gid1 < 1000){
+                        color = "#CCFFCC";
+                    } else if(gid1 < 2000 && gid1 > 1000) {
+                        color = "#99FF99";
+                    } else if(gid1 < 3000 && gid1 > 2000) {
+                        color = "#66FF66";
+                    } else if(gid1 < 4000 && gid1 > 3000) {
+                        color = "#33FF33";
+                    } else if(gid1 < 5000 && gid1 > 4000) {
+                        color = "#00CC00";
+                    } else {
+                        color = "#009900";
                     }
                     
                     return new ol.style.Style({             
@@ -100,7 +114,7 @@
                                 width: 3
                             }),
                             // 显示文本，数字需要转换为文本string类型！
-                            text: gid.toString(),
+                            text: gid ? gid.toString() : "无",
                             offsetY: 15
                         })
                     })
@@ -131,21 +145,25 @@
         // 切分网格
         let squareGrid = turf.squareGrid(bufferBbox, params.gridCellSide, {units: 'kilometers'});
         // 判断切分网格和缓冲区面是否重叠
+        let gridInBuffer = {type:"FeatureCollection", features: []};
         let gid = 0;
         for(let i = 0; i < squareGrid.features.length; i++){
             const isDisjoint = turf.booleanDisjoint(squareGrid.features[i], bufferData)
             if(!isDisjoint){
                 gid = gid + 1
                 squareGrid.features[i].properties = {"gid": gid}
+                gridInBuffer.features.push(squareGrid.features[i])
             } else {
                 squareGrid.features[i].properties = {"gid": 0}
+                // squareGrid.features.splice(i, 1)
             }
         }
+
         // 展示网格
-        const grids = formatGeoJSON.readFeatures(squareGrid)
-        console.log("网格数量：" + grids.length);
+        const grids = formatGeoJSON.readFeatures(gridInBuffer)
+        console.log("网格数量：" + squareGrid.features.length);
         console.log("网格数量(缓冲区内)：" + gid);
-        console.log("网格数量(缓冲区内)：" + (grids.length - gid));
+        console.log("网格数量(缓冲区外)：" + (squareGrid.features.length - gid));
         gridVectorSource.addFeatures(grids)
     </script>
 </body>
