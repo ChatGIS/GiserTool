@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>缓冲区24小时雨量</title>
+    <script src="../script/plugins/OpenLayers/6.5.0/ol.js"></script>
+    <link rel="stylesheet" href="../script/plugins/OpenLayers/6.5.0/ol.css">
+    <!-- <script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="../script/plugins/Turf/6.5.0/turf.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/blueimp-md5/2.19.0/js/md5.min.js"></script>
+    <style>
+        .map {
+            width: 100%;
+            height:700px;
+        }
+        #info {
+            font-size: 25px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <div id="overlay"></div>
+    <div role="group" aria-label="Animation controls">
+        <button id="play" type="button">开始</button>
+        <button id="pause" type="button">停止</button>
+        <span id="info"></span>
+    </div>
+    <script>
+        // 参数
+        let params = {
+            nowNum: 0, // 时间遍历，要素属性array遍历
+            mapCenter: [109.70517868,38.28733057],
+            bufferRadius: 10,  // 缓冲区半径(km)
+            gridCellSide: 1,  // 切分网格宽度(km)
+        };
+        // geojson format
+        const formatGeoJSON = new ol.format.GeoJSON();
+        // 高德底图
+        var gaodeTileLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+            })
+        });
+        // 创建地图
+        let map = new ol.Map({
+            target: 'map',
+            layers: [gaodeTileLayer],
+            view: new ol.View({
+                center: params.mapCenter,
+                projection: 'EPSG:4326',
+                zoom: 9
+            })
+        });
+        // 线数据图层
+        let lineVectorSource = new ol.source.Vector({
+            url: '../resource/geodata/railway.geojson', // GeoJSON的文件路径，用户可以根据需求而改变
+            format: new ol.format.GeoJSON()
+        });
+        let lineVectorLayer = new ol.layer.Vector({
+            source: lineVectorSource
+        });
+        map.addLayer(lineVectorLayer);
+        // 缓冲区图层
+        let bufferVectorSouce = new ol.source.Vector();
+        let bufferVectorLayer = new ol.layer.Vector({
+            source: bufferVectorSouce
+        });
+        map.addLayer(bufferVectorLayer)
+        // // 缓冲区边界图层
+        // let bufferBBoxVectorSouce = new ol.source.Vector();
+        // let bufferBBoxVectorLayer = new ol.layer.Vector({
+        //     source: bufferBBoxVectorSouce
+        // });
+        // map.addLayer(bufferBBoxVectorLayer)
+        // 切分网格图层
+        let gridVectorSource = new ol.source.Vector({
+            url: '../resource/geodata/raingrid.geojson', // GeoJSON的文件路径，用户可以根据需求而改变
+            format: new ol.format.GeoJSON()
+        });
+        let gridVectorLayer = new ol.layer.Vector({
+            source: gridVectorSource,
+            opacity: 0.8,
+                style: feature => {
+                    let color = "red";
+                    const gid = feature.getProperties().gid;
+                    const rain = feature.getProperties().rain[params.nowNum];
+                    feature.getProperties().nowRain = rain;
+                    if(rain == 0){
+                        color = "#CCE5FF";
+                    } else if(rain == 0.001) {
+                        color = "#3399FF";
+                    } else if(rain == 0.002) {
+                        color = "#0066CC";
+                    } else if(rain == 0.003) {
+                        color = "#000099";
+                    } else if(rain == 0.004) {
+                        color = "#000066";
+                    } else {
+                        color = "#000033";
+                    }
+                    
+                    return new ol.style.Style({             
+                        fill: new ol.style.Fill({//填充样式
+                            // color: "#ff6688",
+                            color: color
+                        }),
+                        stroke: new ol.style.Stroke({//边界样式
+                            color: color,
+                            width: 0.5
+                        }),
+                        text: new ol.style.Text({
+                            // 字体与大小
+                            font: '8px Microsoft YaHei',
+                            //文字填充色
+                            fill: new ol.style.Fill({
+                                color: '#666'
+                            }),
+                            //文字边界宽度与颜色
+                            stroke: new ol.style.Stroke({
+                                color: '#fff',
+                                width: 3
+                            }),
+                            // 显示文本，数字需要转换为文本string类型！
+                            text: gid ? gid.toString() : "无",
+                            offsetY: 15
+                        })
+                    })
+                },
+        });
+        map.addLayer(gridVectorLayer)
+        
+        /* 
+            悬浮展示
+        */
+        function addOverlay(center){
+            document.getElementById('overlay').style.display = "block";
+            //此处的overlayLayer要是全局变量，其他的函数内要用到
+            overlayLayer = new ol.Overlay({
+                element: document.getElementById('overlay'),
+                position: center,
+                positioning: 'center-center',
+                stopEvent: false
+            });
+                map.addOverlay(overlayLayer); 
+            }
+        addOverlay(params.center)
+            //地图中鼠标悬浮移动事件
+            map.on('pointermove', function(evt) {
+                var pixel = map.getEventPixel(evt.originalEvent);
+                moveOverlay(evt.coordinate, pixel)
+            })
+            //动态修改ol.Overlay
+            function moveOverlay(coorC,pixel){
+                if(!overlayLayer){
+                    addOverlay(coorC)
+                }
+                var feature = map.forEachFeatureAtPixel(pixel, function (feature) {
+                    return feature;
+                });
+                if (feature) {
+                    // if ('进一步的判断条件') {
+                        overlayLayer.getElement().innerHTML = feature.getProperties().rain[params.nowNum] + "mm"
+                        overlayLayer.setPosition(coorC)
+                    // }
+                }
+            }
+
+        /* 
+            时间切换
+        */
+        let animationId = null;
+        function setTime() {
+            // 
+            gridVectorSource.refresh()
+            console.log(params.nowNum);
+
+            if(params.nowNum < 23){
+                params.nowNum = params.nowNum + 1;
+            } else {
+                params.nowNum = 0;
+            }
+            
+            const el = document.getElementById('info');
+            const showTime = Date.now() + 3600000 * params.nowNum;           
+            el.innerHTML = new Date(showTime).toLocaleDateString() + "  " + new Date(showTime).getHours() + ":00:00";
+
+            
+        }
+        setTime();
+
+        const stop = function () {
+            if (animationId !== null) {
+                window.clearInterval(animationId);
+                animationId = null;
+            }
+        };
+
+        const play = function () {
+            params.nowNum = 0
+            stop();
+            animationId = window.setInterval(setTime, 2000);
+        };
+
+        const startButton = document.getElementById('play');
+        startButton.addEventListener('click', play, false);
+
+        const stopButton = document.getElementById('pause');
+        stopButton.addEventListener('click', stop, false);
+    </script>
+</body>
+</html>
