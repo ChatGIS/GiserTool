@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tin多边形</title>
+    <script src="../script/plugins/OpenLayers/6.5.0/ol.js"></script>
+    <link rel="stylesheet" href="../script/plugins/OpenLayers/6.5.0/ol.css">
+    <script src="http://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
+    <script src="../script/plugins/Turf/6.5.0/turf.min.js"></script>
+    <style>
+        .map {
+            width: 100%;
+            height:700px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map" class="map"></div>
+    <script>
+        // 参数
+        let params = {
+            mapCenter: [109.70517868,38.28733057],
+            bufferRadius: 10,  // 缓冲区半径(km)
+            gridCellSide: 1,  // 切分网格宽度(km)
+        };
+        // geojson format
+        const formatGeoJSON = new ol.format.GeoJSON();
+         // 高德底图
+         var gaodeTileLayer = new ol.layer.Tile({
+            source: new ol.source.XYZ({
+                url:'http://wprd0{1-4}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&style=7&x={x}&y={y}&z={z}'
+            })
+        });
+        // 创建地图
+        let map = new ol.Map({
+            target: 'map',
+            layers: [gaodeTileLayer],
+            view: new ol.View({
+                center: params.mapCenter,
+                projection: 'EPSG:4326',
+                zoom: 10
+            })
+        });
+        // 点图层
+        let pointVectorSouce = new ol.source.Vector();
+        let pointVectorLayer = new ol.layer.Vector({
+            source: pointVectorSouce
+        });
+        map.addLayer(pointVectorLayer);
+
+        // tin图层
+        let tinVectorSouce = new ol.source.Vector();
+        let tinVectorLayer = new ol.layer.Vector({
+            source: tinVectorSouce
+        });
+        map.addLayer(tinVectorLayer);
+
+        // 插值图层
+        let idwVectorSouce = new ol.source.Vector();
+        let idwVectorLayer = new ol.layer.Vector({
+            source: idwVectorSouce
+        });
+        map.addLayer(idwVectorLayer);
+
+        // generate some random point data
+        var points = turf.randomPoint(30, {bbox: [params.mapCenter[0], params.mapCenter[1], params.mapCenter[0] + 0.5, params.mapCenter[1] + 0.5]});
+
+        // add a random property to each point between 0 and 9
+        for (var i = 0; i < points.features.length; i++) {
+            // points.features[i].properties.z = ~~(Math.random() * 9);
+            points.features[i].properties.solRad = Math.random() * 50;
+        }
+        var tin = turf.tin(points, 'z');
+
+        var options = {gridType: 'square', property: 'solRad', units: 'miles'};
+        var grid = turf.interpolate(points, 1, options);
+
+        const pointsOL = formatGeoJSON.readFeatures(points)
+        // pointVectorSouce.addFeatures(pointsOL)
+
+        const tinOL = formatGeoJSON.readFeatures(tin)
+        // tinVectorSouce.addFeatures(tinOL)
+
+        const gridOL = formatGeoJSON.readFeatures(grid)
+        idwVectorSouce.addFeatures(gridOL)
+    </script>
+</body>
+</html>
